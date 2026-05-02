@@ -17,9 +17,213 @@ TenderLens is a platform that helps procurement officers evaluate tender bids. Y
 
 ---
 
+## Architecture
+
+The platform is a five-stage pipeline. Each stage feeds into the next, and every action is logged for auditability.
+
+```
+                TENDER DOCUMENT                    BIDDER SUBMISSIONS
+                      |                                    |
+                      v                                    v
+            +-------------------+              +------------------------+
+            |  DOCUMENT         |              |  DOCUMENT              |
+            |  INGESTION        |              |  INGESTION             |
+            |  (PDF/DOCX/IMG)   |              |  (PDF/DOCX/IMG/OCR)   |
+            +--------+----------+              +-----------+------------+
+                     |                                     |
+                     v                                     |
+            +-------------------+                          |
+            |  TENDER ANALYSIS  |                          |
+            |  (LLM extracts    |                          |
+            |   criteria)       |                          |
+            +--------+----------+                          |
+                     |                                     |
+                     v                                     |
+            +-------------------+                          |
+            |  OFFICER REVIEW   |                          |
+            |  (confirm/edit    |                          |
+            |   criteria)       |                          |
+            +--------+----------+                          |
+                     |                   +-----------------+
+                     |                   |
+                     v                   v
+            +-------------------------------------+
+            |  BIDDER DOCUMENT PROCESSING          |
+            |  (classify docs, extract evidence    |
+            |   per criterion, normalize values)   |
+            +------------------+------------------+
+                               |
+                               v
+            +-------------------------------------+
+            |  EVALUATION ENGINE                   |
+            |  (quantitative: deterministic rules  |
+            |   qualitative: LLM-assisted)         |
+            +------------------+------------------+
+                               |
+                               v
+            +-------------------------------------+
+            |  REPORTING & HUMAN REVIEW            |
+            |  (consolidated report, overrides,    |
+            |   audit trail, PDF export)           |
+            +-------------------------------------+
+```
+
+### Data Flow
+
+- **Ingestion** converts all documents (any format) into structured text with provenance metadata (source file, page, OCR confidence)
+- **Tender Analysis** sends the full tender text to the LLM and gets back structured criteria as JSON
+- **Officer Review** lets the procurement officer confirm, edit, or add criteria before evaluation starts
+- **Bidder Processing** classifies each document, then extracts evidence per criterion with value normalization
+- **Evaluation** uses deterministic rules for numeric thresholds and LLM for qualitative judgments
+- **Reporting** produces a consolidated matrix, per-bidder detail, and a full audit trail
+
+---
+
+## Tech Stack
+
+| Component | Technology | Why |
+|-----------|-----------|-----|
+| **Language** | Python 3.11+ | Best ecosystem for document processing, OCR, and LLM integration |
+| **UI Framework** | Streamlit | Fast to build, multi-page app support, built-in widgets for forms and tables |
+| **Local LLM** | Ollama + Phi-3 Mini (3.8B) | Runs on 8GB Mac, no API keys needed, good at structured extraction |
+| **OCR** | Tesseract via pytesseract | Lightweight (~50MB), reads scanned docs and photos, per-word confidence scores |
+| **PDF Parsing** | PyMuPDF (fitz) | Fast text extraction from digital PDFs, can render pages as images for OCR fallback |
+| **PDF Tables** | pdfplumber | Specialized table extraction from PDFs — critical for financial statements |
+| **Word Files** | python-docx | Reads .docx files including tables |
+| **Image Processing** | Pillow | Preprocessing before OCR: grayscale, contrast enhancement, sharpening |
+| **Database** | SQLite | Zero-config, file-based, perfect for local app with audit trail |
+| **PDF Reports** | FPDF2 | Generates multi-page PDF reports for download |
+| **Data Display** | Pandas | DataFrames for the evaluation matrix display in Streamlit |
+
+---
+
+## Module-by-Module Breakdown
+
+### `modules/llm.py` — LLM Wrapper
+
+Connects to Ollama running locally on `http://localhost:11434`. Provides two functions:
+- `chat(prompt, system_prompt)` — sends a prompt and gets a text response
+- `chat_json(prompt, system_prompt)` — sends a prompt with JSON mode enabled, parses the response into a Python dict
+
+Includes retry logic (2 retries with 2-second delay), timeout handling, and clear error messages if Ollama isn't running or the model isn't downloaded.
+
+### `modules/ingestion.py` — Document Parser
+
+Detects file type and routes to the right parser:
+- **Digital PDFs** — extracts text via PyMuPDF, tables via pdfplumber
+- **Scanned PDFs** — detects pages with < 50 characters of text, renders them as 300 DPI images, and sends to OCR
+- **Word files** — extracts paragraphs and tables via python-docx
+- **Images (JPG/PNG)** — sends directly to OCR
+- **Text files** — reads directly
+
+Every extracted document gets tagged with provenance: filename, SHA-256 hash, page number, OCR confidence per page.
+
+### `modules/ocr.py` — OCR Pipeline
+
+Wraps Tesseract with image preprocessing:
+1. Convert to grayscale
+2. Increase contrast (2x enhancement)
+3. Apply sharpening filter
+4. Run Tesseract OCR
+
+Returns the extracted text plus an average confidence score (from Tesseract's per-word confidence). This confidence drives downstream decisions — low confidence values trigger "Needs Manual Review" verdicts instead of auto-decisions.
+
+### `modules/tender_analyzer.py` — Criteria Extraction
+
+Takes the full tender text and sends it to the LLM with a structured prompt. The LLM returns a JSON array of criteria, each with:
+- Criterion ID (e.g., C-001)
+- Description in plain language
+- Category (financial / experience / compliance / technical)
+- Mandatory or optional flag
+- Numeric threshold if applicable
+- Expected evidence documents
+- Source section reference in the tender
+
+### `modules/bidder_processor.py` — Evidence Extraction
+
+Processes each bidder's documents in two passes:
+
+**Pass 1 — Document Classification:** Sends the first 2000 characters of each document to the LLM. The LLM classifies it into one of 13 categories (financial_statement, gst_certificate, work_completion_certificate, iso_certificate, etc.).
+
+**Pass 2 — Criterion-Guided Extraction:** For each criterion, sends the relevant document text to the LLM and asks it to extract the specific value or information that relates to that criterion. The LLM returns the extracted value, a normalized numeric value (if applicable), and the exact source text.
+
+Also includes a value normalizer for Indian currency formats — handles "Rs. 5,20,00,000", "5.2 Crore", "Rupees Five Crore Twenty Lakhs", "INR 52000000", etc., and converts them all to a standard numeric form.
+
+### `modules/evaluator.py` — Verdict Engine
+
+Two evaluation modes:
+
+**Deterministic (quantitative criteria):** For criteria with numeric thresholds (turnover >= Rs. 5 Cr, projects >= 3, etc.), the system does pure arithmetic comparison. No LLM involved. It also checks for borderline values (within 10% of threshold) and low OCR confidence — both trigger "Needs Review" instead of a hard verdict.
+
+**LLM-Assisted (qualitative criteria):** For criteria requiring semantic judgment ("similar nature of work", "relevant experience"), the LLM assesses the evidence and returns a verdict with reasoning. The prompt instructs it to be conservative — when in doubt, choose "Needs Review".
+
+Three possible verdicts per criterion:
+- `ELIGIBLE` — clear, high-confidence evidence that the criterion is met
+- `NOT_ELIGIBLE` — clear, high-confidence evidence that the criterion is NOT met
+- `NEEDS_REVIEW` — ambiguous, incomplete, low-confidence, or borderline
+
+The overall bidder verdict follows a strict rule: any mandatory criterion that is NOT_ELIGIBLE makes the bidder NOT_ELIGIBLE. Any mandatory criterion that NEEDS_REVIEW makes the bidder NEEDS_REVIEW. Only if all mandatory criteria are ELIGIBLE is the bidder ELIGIBLE.
+
+### `modules/reporter.py` — PDF Report Generator
+
+Generates a multi-section PDF report using FPDF2:
+1. **Cover page** — tender name, date, criteria count, bidder count
+2. **Criteria summary** — all criteria with categories and thresholds
+3. **Consolidated results table** — all bidders with pass/fail/review counts and overall verdict
+4. **Per-bidder detail** — criterion-by-criterion explanation with source references
+5. **Officer overrides** — any manual verdict changes with reasons and officer names
+6. **Audit trail** — every logged action with timestamps
+
+### `database/db.py` — SQLite Operations
+
+Eight tables with full CRUD operations:
+- `tenders` — tender metadata
+- `criteria` — extracted criteria linked to a tender
+- `bidders` — bidder names linked to a tender
+- `documents` — uploaded documents with provenance (hash, type, OCR confidence)
+- `evidence` — extracted evidence per bidder per criterion
+- `verdicts` — evaluation results per bidder per criterion
+- `officer_overrides` — manual review decisions with reasons
+- `audit_log` — every action timestamped for the audit trail
+
+---
+
+## LLM Prompt Strategy
+
+All prompts are stored as text files in the `prompts/` folder. The strategy has three principles:
+
+### 1. JSON-Mode Output
+
+Every LLM call uses Ollama's JSON format mode (`format: "json"`). This forces the model to return valid JSON instead of free-form text. It prevents hallucinated prose and makes parsing reliable.
+
+### 2. Few-Shot Examples
+
+Each prompt includes 1-2 examples of the expected input/output format embedded in the prompt text itself. This grounds the model's output structure and reduces format errors.
+
+### 3. Conservative Instructions
+
+Every prompt includes explicit instructions to be conservative:
+- "If you are not sure, say 'uncertain'. Do not make up information."
+- "Only extract information that is ACTUALLY present in the document text."
+- "If the information is not found in this document, set 'found' to false."
+- "When in doubt, choose NEEDS_REVIEW."
+
+This ensures the system errs on the side of flagging for human review rather than making a wrong automated call.
+
+### The Four Prompts
+
+| Prompt File | Used By | Purpose |
+|-------------|---------|---------|
+| `extract_criteria.txt` | `tender_analyzer.py` | Reads the tender and extracts all eligibility criteria as structured JSON |
+| `classify_document.txt` | `bidder_processor.py` | Classifies a bidder document into one of 13 categories |
+| `extract_evidence.txt` | `bidder_processor.py` | Extracts the specific value from a document that relates to a given criterion |
+| `evaluate_criterion.txt` | `evaluator.py` | Evaluates whether extracted evidence meets a qualitative criterion |
+
+---
+
 ## Prerequisites
 
-You need three things installed on your Mac before you can run TenderLens. Here are the exact commands:
+You need three things installed on your Mac before you can run TenderLens:
 
 ### 1. Python 3.11 or higher
 
@@ -146,9 +350,9 @@ The system will:
 - The system evaluates each bidder against each criterion
 - This takes several minutes (it makes one LLM call per bidder per criterion)
 - Results appear as a colour-coded matrix:
-  - Green (✅) = Eligible
-  - Red (❌) = Not Eligible
-  - Yellow (⚠️) = Needs Manual Review
+  - Green = Eligible
+  - Red = Not Eligible
+  - Yellow = Needs Manual Review
 - Click on any bidder to see the detailed explanation for each criterion
 - For items marked "Needs Review", you can submit an officer override with a reason
 
@@ -258,15 +462,3 @@ OLLAMA_MODEL = "llama3.2:3b"  # or "mistral:7b"
 **Database errors**
 - Delete the database file and restart: `rm database/tenderlens.db`
 - The database is recreated automatically on startup
-
----
-
-## Tech Stack
-
-- **Python 3.11+** — backend language
-- **Streamlit** — web UI framework
-- **Ollama + Phi-3 Mini** — local LLM (no cloud, no API keys)
-- **Tesseract** — OCR for scanned documents and photos
-- **PyMuPDF + pdfplumber** — PDF parsing and table extraction
-- **SQLite** — local database for audit trail
-- **FPDF2** — PDF report generation
