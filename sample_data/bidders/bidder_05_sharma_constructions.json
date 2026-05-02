@@ -1,0 +1,159 @@
+{
+  "bidder_id": "B-005",
+  "company_name": "Sharma Construction Pvt Ltd",
+  "scenario": "NEEDS MANUAL REVIEW — Missing one work completion certificate. 2 verified, 1 claimed without proof.",
+
+  "company_profile": {
+    "incorporated": "2003",
+    "registered_office": "12, Civil Lines, Jaipur, Rajasthan 302006",
+    "type": "Private Limited Company",
+    "cin": "U45200RJ2003PTC017890",
+    "directors": ["Rajeev Sharma", "Kavita Sharma"],
+    "employees": 175,
+    "civil_engineer": {
+      "name": "Er. Anil Meena",
+      "qualification": "B.Tech Civil, MNIT Jaipur",
+      "experience_years": 12
+    }
+  },
+
+  "financials": {
+    "source_type": "mixed",
+    "notes": "FY 2023-24 and 2024-25 are typed PDFs. FY 2025-26 is a scanned PDF.",
+    "audited": true,
+    "ca_name": "CA Pradeep Joshi",
+    "ca_membership_no": "FCA-067890",
+    "turnover": {
+      "fy_2023_24": {
+        "value": 62100000,
+        "source_type": "typed_pdf",
+        "ocr_confidence": null,
+        "formatted": "Rs. 6,21,00,000"
+      },
+      "fy_2024_25": {
+        "value": 70500000,
+        "source_type": "typed_pdf",
+        "ocr_confidence": null,
+        "formatted": "Rs. 7,05,00,000"
+      },
+      "fy_2025_26": {
+        "value": 58000000,
+        "source_type": "scanned_pdf",
+        "scan_quality": "medium",
+        "ocr_confidence": 0.85,
+        "formatted": "Rs. 5,80,00,000"
+      },
+      "average": 63533333,
+      "formatted_average": "Rs. 6,35,33,333"
+    },
+    "ca_certificate": {
+      "source_type": "photograph_jpg",
+      "scan_quality": "medium",
+      "ocr_confidence": 0.78,
+      "stated_average": "Rs. 6.35 Crore",
+      "notes": "Photo of CA certificate. Slightly shadowed but readable."
+    },
+    "net_worth": {
+      "as_on": "31-03-2026",
+      "value": 28000000,
+      "formatted": "Rs. 2,80,00,000",
+      "positive": true
+    }
+  },
+
+  "experience": {
+    "similar_works": [
+      {
+        "project": "Construction of Barracks at BSF Camp, Jodhpur",
+        "client": "Border Security Force",
+        "value": 34000000,
+        "formatted_value": "Rs. 3,40,00,000",
+        "completion_date": "2024-03-15",
+        "completion_certificate": true,
+        "certificate_source": "scanned_pdf",
+        "scan_quality": "good",
+        "government_project": true
+      },
+      {
+        "project": "Residential Quarters at CRPF Campus, Hyderabad",
+        "client": "CRPF, MHA",
+        "value": 28000000,
+        "formatted_value": "Rs. 2,80,00,000",
+        "completion_date": "2023-11-22",
+        "completion_certificate": true,
+        "certificate_source": "scanned_pdf",
+        "scan_quality": "good",
+        "government_project": true
+      },
+      {
+        "project": "NH-48 Road Widening, Rajasthan",
+        "client": "MoRTH / NHAI",
+        "value": 41000000,
+        "formatted_value": "Rs. 4,10,00,000",
+        "completion_date": "2022-08-10",
+        "completion_certificate": false,
+        "certificate_source": null,
+        "listed_in_company_profile": true,
+        "company_profile_page": 8,
+        "government_project": true,
+        "notes": "Listed in company profile but NO completion certificate submitted. Also, road widening may not qualify as 'similar work' (building construction for govt)."
+      }
+    ],
+    "notes": "2 verified projects with certificates. 1 claimed project without certificate AND questionable 'similarity'. This is the key ambiguity."
+  },
+
+  "compliance": {
+    "gst": {
+      "gstin": "08AABCS7890P1Z5",
+      "status": "Active",
+      "legal_name": "Sharma Construction Pvt Ltd",
+      "source_type": "typed_pdf"
+    },
+    "pan": {
+      "pan_number": "AABCS7890P",
+      "name": "Sharma Construction Pvt Ltd",
+      "source_type": "typed_pdf"
+    },
+    "iso_9001": {
+      "standard": "ISO 9001:2015",
+      "certifying_body": "Bureau Veritas",
+      "valid_from": "2024-09-15",
+      "valid_until": "2027-09-14",
+      "status": "valid",
+      "source_type": "typed_pdf"
+    },
+    "pwd_registration": {
+      "registered_with": "Rajasthan State PWD",
+      "class": "AA Class",
+      "registration_no": "RJPWD/AA/2022/567",
+      "valid_until": "2027-03-31",
+      "source_type": "typed_pdf"
+    },
+    "blacklisting_affidavit": true,
+    "emd": {
+      "type": "Demand Draft",
+      "amount": 1000000,
+      "formatted": "Rs. 10,00,000",
+      "bank": "Bank of Baroda",
+      "dd_number": "BOB/DD/2026/223344",
+      "date": "2026-04-08",
+      "in_favour_of": "Commandant, Group Centre, CRPF, New Delhi"
+    }
+  },
+
+  "expected_verdict": {
+    "overall": "NEEDS MANUAL REVIEW",
+    "criteria": {
+      "turnover": "ELIGIBLE — Average Rs. 6.35 Cr, above threshold. CA certificate cross-validates.",
+      "net_worth": "ELIGIBLE",
+      "similar_works": "NEEDS REVIEW — Only 2 of 3 required completion certificates submitted. Third project (road widening) is claimed in company profile without proof AND may not qualify as 'similar work' (it's road construction, not building construction).",
+      "gst": "ELIGIBLE",
+      "pan": "ELIGIBLE",
+      "iso_9001": "ELIGIBLE",
+      "pwd_registration": "ELIGIBLE",
+      "emd": "ELIGIBLE",
+      "blacklisting": "ELIGIBLE"
+    },
+    "notes": "Tests: missing supporting document, definition of 'similar work', mixed document quality, photograph-based CA certificate"
+  }
+}

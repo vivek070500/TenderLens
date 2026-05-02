@@ -1,0 +1,145 @@
+{
+  "bidder_id": "B-002",
+  "company_name": "Bharat Builders & Engineers Ltd",
+  "scenario": "CLEAR ELIGIBLE — All criteria met, values expressed in different formats (Crore notation, words), scanned documents with decent quality",
+
+  "company_profile": {
+    "incorporated": "2005",
+    "registered_office": "23-A, Nehru Place, New Delhi 110019",
+    "type": "Public Limited Company",
+    "cin": "U45201DL2005PLC134567",
+    "directors": ["Amit Verma", "Priya Verma", "Sanjay Gupta"],
+    "employees": 450,
+    "civil_engineer": {
+      "name": "Er. Deepak Sharma",
+      "qualification": "B.E. Civil, NIT Kurukshetra",
+      "experience_years": 14
+    }
+  },
+
+  "financials": {
+    "source_type": "scanned_pdf",
+    "scan_quality": "good",
+    "ocr_confidence": 0.92,
+    "audited": true,
+    "ca_name": "CA Ramesh Jain, M/s Jain & Co.",
+    "ca_membership_no": "FCA-038291",
+    "turnover": {
+      "fy_2023_24": 65000000,
+      "fy_2024_25": 71000000,
+      "fy_2025_26": 68000000,
+      "average": 68000000,
+      "formatted": {
+        "fy_2023_24": "6.50 Crore",
+        "fy_2024_25": "Rupees Seven Crore Ten Lakhs",
+        "fy_2025_26": "Rs. 6.80 Cr",
+        "average": "Rs. 6.80 Crore (approx)"
+      },
+      "notes": "Each year uses a different format — tests value normalisation"
+    },
+    "net_worth": {
+      "as_on": "31-03-2026",
+      "value": 32000000,
+      "formatted": "Rs. 3.20 Crore",
+      "positive": true
+    }
+  },
+
+  "experience": {
+    "similar_works": [
+      {
+        "project": "Construction of Office Complex for UIDAI, Chandigarh",
+        "client": "UIDAI, Govt of India",
+        "value": 38000000,
+        "formatted_value": "3.80 Crore",
+        "completion_date": "2024-08-20",
+        "completion_certificate": true,
+        "certificate_source": "scanned_pdf",
+        "scan_quality": "good",
+        "government_project": true
+      },
+      {
+        "project": "Residential Quarters for Central Excise Dept, Noida",
+        "client": "CBIC, Ministry of Finance",
+        "value": 29000000,
+        "formatted_value": "Rs. 2,90,00,000/-",
+        "completion_date": "2023-05-15",
+        "completion_certificate": true,
+        "certificate_source": "scanned_pdf",
+        "scan_quality": "good",
+        "government_project": true
+      },
+      {
+        "project": "School Building for Kendriya Vidyalaya, Faridabad",
+        "client": "KVS, Ministry of Education",
+        "value": 22000000,
+        "formatted_value": "Rs. Twenty Two Lakhs... [ERROR: Actually Twenty Two Crore? Document says 2,20,00,000]",
+        "completion_date": "2022-11-30",
+        "completion_certificate": true,
+        "certificate_source": "scanned_pdf",
+        "scan_quality": "medium",
+        "government_project": true,
+        "notes": "Value written in words says 'Twenty Two Lakhs' but the numeric figure in the same certificate shows 2,20,00,000 (Rs 2.2 Cr) — tests cross-validation within a single document"
+      }
+    ]
+  },
+
+  "compliance": {
+    "gst": {
+      "gstin": "07AABCB5678M1Z2",
+      "status": "Active",
+      "legal_name": "Bharat Builders & Engineers Ltd",
+      "registration_date": "2017-07-01",
+      "source_type": "scanned_pdf",
+      "scan_quality": "good",
+      "ocr_confidence": 0.94
+    },
+    "pan": {
+      "pan_number": "AABCB5678M",
+      "name": "Bharat Builders & Engineers Ltd",
+      "source_type": "scanned_pdf"
+    },
+    "iso_9001": {
+      "standard": "ISO 9001:2015",
+      "certificate_number": "IN-QMS-2024-11234",
+      "certifying_body": "TUV SUD",
+      "valid_from": "2024-01-10",
+      "valid_until": "2027-01-09",
+      "status": "valid",
+      "source_type": "scanned_pdf"
+    },
+    "pwd_registration": {
+      "registered_with": "CPWD",
+      "class": "Class-I",
+      "registration_no": "CPWD/CONT/2021/7891",
+      "valid_until": "2026-12-31",
+      "source_type": "scanned_pdf"
+    },
+    "blacklisting_affidavit": true,
+    "emd": {
+      "type": "Bank Guarantee",
+      "amount": 1000000,
+      "formatted": "Rs. 10 Lakh",
+      "bank": "Punjab National Bank",
+      "bg_number": "PNB/BG/2026/334455",
+      "date": "2026-04-12",
+      "in_favour_of": "Commandant, Group Centre, CRPF, New Delhi"
+    }
+  },
+
+  "expected_verdict": {
+    "overall": "ELIGIBLE",
+    "criteria": {
+      "turnover": "ELIGIBLE — Average Rs. 6.8 Cr exceeds Rs. 5 Cr. Different formats in each year test normalisation.",
+      "net_worth": "ELIGIBLE — Positive",
+      "similar_works": "ELIGIBLE — 3 works, all with certificates. One has a word-vs-number discrepancy (Lakhs vs Crore) but the numeric figure is Rs. 2.2 Cr which qualifies. System should flag the word/number mismatch.",
+      "gst": "ELIGIBLE",
+      "pan": "ELIGIBLE",
+      "iso_9001": "ELIGIBLE",
+      "pwd_registration": "ELIGIBLE",
+      "emd": "ELIGIBLE",
+      "blacklisting": "ELIGIBLE"
+    },
+    "notes": "Tests: scanned document handling, value format normalisation, internal document consistency check"
+  }
+}

@@ -1,0 +1,38 @@
+You are an expert at analysing government tender documents. Your task is to extract all eligibility criteria from the tender text provided below.
+
+For each criterion, return a JSON object with these fields:
+- "criterion_id": a short ID like "C-001", "C-002", etc.
+- "description": the full criterion in plain language
+- "category": one of "financial", "experience", "compliance", "technical"
+- "mandatory": true if mandatory, false if optional/desirable
+- "threshold": the specific threshold or condition (e.g., ">= 5 Crore", "at least 3 projects", "valid certificate required"). Use "" if no numeric threshold.
+- "expected_evidence": what documents the bidder should provide for this criterion
+- "source_section": the section number or page reference where this criterion appears in the tender
+
+Rules:
+- Extract EVERY eligibility criterion, both mandatory and optional.
+- Words like "must", "shall", "mandatory", "required" indicate mandatory criteria.
+- Words like "desirable", "preferred", "additional weightage" indicate optional criteria.
+- If a criterion has a numeric threshold, capture the exact number and operator (>=, <=, etc.)
+- Do NOT invent criteria that are not in the tender text.
+- If you are unsure whether something is a criterion, include it and mark it with a note.
+
+Return your response as a JSON object with a single key "criteria" containing an array of criterion objects.
+
+Example output format:
+{
+  "criteria": [
+    {
+      "criterion_id": "C-001",
+      "description": "Minimum average annual turnover of Rs. 5 Crore in last 3 financial years",
+      "category": "financial",
+      "mandatory": true,
+      "threshold": ">= 50000000 INR average over 3 years",
+      "expected_evidence": "Audited financial statements, CA certificate",
+      "source_section": "Section 4.1"
+    }
+  ]
+}
+
+TENDER TEXT:
+{tender_text}

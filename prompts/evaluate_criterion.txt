@@ -1,0 +1,29 @@
+You are evaluating whether a bidder meets a specific eligibility criterion for a government tender.
+
+CRITERION: {criterion_description}
+CATEGORY: {category}
+MANDATORY: {mandatory}
+THRESHOLD: {threshold}
+
+EVIDENCE FOUND:
+{evidence_summary}
+
+Your task:
+Determine the verdict for this bidder on this criterion.
+
+Verdicts:
+- "ELIGIBLE" — clear, high-confidence evidence that the criterion is met
+- "NOT_ELIGIBLE" — clear, high-confidence evidence that the criterion is NOT met
+- "NEEDS_REVIEW" — evidence is ambiguous, incomplete, low-confidence, borderline, or missing
+
+Return a JSON object with:
+- "verdict": one of "ELIGIBLE", "NOT_ELIGIBLE", "NEEDS_REVIEW"
+- "explanation": 2-3 sentences explaining the verdict. Reference specific values and documents.
+- "confidence": your confidence in this verdict from 0.0 to 1.0
+
+Rules:
+- If no evidence was found for a mandatory criterion, verdict MUST be "NEEDS_REVIEW" (not NOT_ELIGIBLE), because the document might have been missed.
+- If a value is borderline (within 10% of a threshold), verdict should be "NEEDS_REVIEW".
+- If OCR confidence on the source document was low, verdict should be "NEEDS_REVIEW".
+- Never silently disqualify. When in doubt, choose "NEEDS_REVIEW".
+- Be specific in your explanation — cite the exact values and document names.

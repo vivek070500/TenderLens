@@ -1,0 +1,150 @@
+{
+  "tender_id": "CRPF/GC/NDL/CONST/2026-27/001",
+  "tender_description": "Construction of Administrative Building and Residential Quarters at CRPF Campus, Gurugram",
+
+  "mandatory_criteria": [
+    {"id": "C-001", "description": "Avg annual turnover >= Rs. 5 Cr (last 3 FYs)", "category": "financial"},
+    {"id": "C-002", "description": "Positive net worth as on 31 March 2026", "category": "financial"},
+    {"id": "C-003", "description": ">= 3 similar works >= Rs. 2 Cr each (last 5 years). Similar = building construction (residential/commercial) for govt", "category": "experience"},
+    {"id": "C-004", "description": "Qualified civil engineer with >= 10 years experience", "category": "technical"},
+    {"id": "C-005", "description": "Valid GST registration (active)", "category": "compliance"},
+    {"id": "C-006", "description": "Valid PAN card", "category": "compliance"},
+    {"id": "C-007", "description": "Valid ISO 9001:2015 as on date of submission", "category": "compliance"},
+    {"id": "C-008", "description": "CPWD / MES / State PWD registration", "category": "compliance"},
+    {"id": "C-009", "description": "EMD of Rs. 10 Lakh (DD or BG)", "category": "financial"},
+    {"id": "C-010", "description": "Not blacklisted in last 5 years + affidavit submitted", "category": "compliance"}
+  ],
+
+  "desirable_criteria": [
+    {"id": "D-001", "description": "Experience in paramilitary/defence projects (up to 10 marks)", "category": "experience"},
+    {"id": "D-002", "description": "ISO 14001:2015 certification (up to 5 marks)", "category": "compliance"}
+  ],
+
+  "evaluation_summary": {
+    "total_bidders": 10,
+    "eligible": 3,
+    "not_eligible": 2,
+    "needs_review": 5
+  },
+
+  "bidder_results": [
+    {
+      "bidder_id": "B-001",
+      "name": "Apex Constructions Pvt Ltd",
+      "overall_verdict": "ELIGIBLE",
+      "scenario_tested": "Clean pass — all criteria met, well above thresholds, high-quality typed documents",
+      "failed_criteria": [],
+      "review_criteria": [],
+      "desirable_bonus": ["D-001: Paramilitary/defence experience (3 of 4 projects)"]
+    },
+    {
+      "bidder_id": "B-002",
+      "name": "Bharat Builders & Engineers Ltd",
+      "overall_verdict": "ELIGIBLE",
+      "scenario_tested": "Format variation — scanned docs, different value formats per year, internal word-vs-number discrepancy in one certificate",
+      "failed_criteria": [],
+      "review_criteria": [],
+      "notes": "System should flag the word/number mismatch in KV Faridabad certificate (says 'Twenty Two Lakhs' but number shows Rs. 2.2 Cr). Numeric value qualifies."
+    },
+    {
+      "bidder_id": "B-003",
+      "name": "Gupta Infrastructure Pvt Ltd",
+      "overall_verdict": "NOT ELIGIBLE",
+      "scenario_tested": "Multiple failures — turnover too low, no qualifying works, no ISO, engineer under-qualified",
+      "failed_criteria": ["C-001: Turnover Rs. 3.1 Cr (below Rs. 5 Cr)", "C-003: 0 qualifying works", "C-007: No ISO certificate"],
+      "review_criteria": ["C-004: Engineer has diploma not degree, 7 yrs not 10", "C-008: PWD Class-III may be insufficient"],
+      "notes": "Clear rejection on multiple grounds"
+    },
+    {
+      "bidder_id": "B-004",
+      "name": "Delta Engineering & Construction Co.",
+      "overall_verdict": "NOT ELIGIBLE",
+      "scenario_tested": "Blacklisting — strong bidder but was blacklisted within the 5-year window",
+      "failed_criteria": ["C-010: Blacklisted by Maharashtra PWD (Sep 2023 - Aug 2025). Falls within 5-year window. Affidavit not submitted."],
+      "review_criteria": [],
+      "notes": "Tests non-financial disqualification. Blacklisting has expired but falls within tender's 5-year lookback."
+    },
+    {
+      "bidder_id": "B-005",
+      "name": "Sharma Construction Pvt Ltd",
+      "overall_verdict": "NEEDS MANUAL REVIEW",
+      "scenario_tested": "Missing document — only 2 of 3 required completion certificates. Third project claimed in profile without proof. Also tests 'similar work' definition (road widening vs building).",
+      "failed_criteria": [],
+      "review_criteria": ["C-003: Only 2 verified works. Third claimed but no certificate. Road widening may not be 'similar'."],
+      "notes": "Officer should verify if third certificate was accidentally omitted or if bidder only has 2 qualifying projects"
+    },
+    {
+      "bidder_id": "B-006",
+      "name": "Indus Builders & Developers",
+      "overall_verdict": "NEEDS MANUAL REVIEW",
+      "scenario_tested": "OCR nightmare — all financials are poor-quality scans, turnover is borderline (estimated Rs. 5.07 Cr vs Rs. 5 Cr threshold), OCR confidence 0.53-0.67",
+      "failed_criteria": [],
+      "review_criteria": ["C-001: Turnover figures unreadable with confidence. Best estimate Rs. 5.07 Cr — within 2% of threshold. Manual verification of original documents needed."],
+      "notes": "System must NOT auto-reject. The bidder may well be eligible — the scans are just too poor to confirm."
+    },
+    {
+      "bidder_id": "B-007",
+      "name": "Eagle Projects & Infrastructure Ltd",
+      "overall_verdict": "NEEDS MANUAL REVIEW",
+      "scenario_tested": "Expired certificate — ISO 9001 expired 89 days before submission. Otherwise the strongest bidder.",
+      "failed_criteria": [],
+      "review_criteria": ["C-007: ISO 9001:2015 expired 31 Jan 2026. Tender requires valid as on date of submission (30 Apr 2026). Renewal may be in progress."],
+      "desirable_bonus": ["D-001: 3 of 4 projects are paramilitary/defence"],
+      "notes": "Tests certificate validity date checking. Officer should ask bidder for renewal status."
+    },
+    {
+      "bidder_id": "B-008",
+      "name": "Highland Constructions Ltd",
+      "overall_verdict": "NEEDS MANUAL REVIEW",
+      "scenario_tested": "Ambiguous 'similar work' — all 4 projects are government construction but none are residential/commercial buildings (warehouses, cold storage, factory, hangar)",
+      "failed_criteria": [],
+      "review_criteria": ["C-003: 4 works, all govt, all >= Rs. 2 Cr, all with certificates. But none are 'residential or commercial buildings' per tender definition. They are industrial/specialised structures."],
+      "desirable_bonus": ["D-001: Defence project experience (HAL factory, IAF hangar)", "D-002: Valid ISO 14001:2015"],
+      "notes": "Tests semantic understanding of 'similar work'. The officer must decide if warehouse/factory/hangar construction counts."
+    },
+    {
+      "bidder_id": "B-009",
+      "name": "National Infrastructure Corp Pvt Ltd",
+      "overall_verdict": "ELIGIBLE",
+      "scenario_tested": "Boundary values — everything exactly at threshold. Turnover exactly Rs. 5 Cr, projects exactly Rs. 2 Cr, engineer exactly 10 years, one project date at edge of 5-year window.",
+      "failed_criteria": [],
+      "review_criteria": [],
+      "notes": "Tests >= vs > interpretation and date boundary handling. All values technically pass but with zero margin. System may optionally flag tight margins for officer awareness."
+    },
+    {
+      "bidder_id": "B-010",
+      "name": "Zenith Builders",
+      "overall_verdict": "NEEDS MANUAL REVIEW",
+      "scenario_tested": "All-photographs submission — every document is a phone photo. Small contractor from tier-3 city. Tests system's ability to handle non-standard submission formats.",
+      "failed_criteria": [],
+      "review_criteria": [
+        "C-001: FY 2024-25 turnover has OCR confidence 0.64 (glare on photo)",
+        "C-003: One certificate has OCR confidence 0.59 (poor photo quality). Community centre classification as 'residential/commercial' is debatable.",
+        "C-007: ISO certifying body name partially illegible in photo"
+      ],
+      "notes": "Tests graceful handling of poor-format submissions. System should not penalise a bidder for submitting photos instead of PDFs — it should extract what it can and flag what it can't."
+    }
+  ],
+
+  "scenarios_covered": [
+    "Clean eligible with typed PDFs (B-001)",
+    "Eligible with format variations and scanned docs (B-002)",
+    "Clear rejection on multiple criteria (B-003)",
+    "Rejection on non-financial ground — blacklisting (B-004)",
+    "Missing supporting document (B-005)",
+    "Poor OCR quality with borderline values (B-006)",
+    "Expired certification (B-007)",
+    "Ambiguous 'similar work' definition (B-008)",
+    "Boundary/threshold values — exactly at limits (B-009)",
+    "All-photographs submission from small contractor (B-010)",
+    "Value format normalisation — Crore, Lakhs, words, Indian numbering (B-002, B-005)",
+    "Cross-validation — matching values across documents (B-001, B-005)",
+    "Internal document inconsistency — word vs number mismatch (B-002)",
+    "Date boundary — project at edge of 5-year window (B-009)",
+    "Mandatory vs desirable criteria distinction (B-007, B-008)",
+    "Under-qualified technical personnel (B-003)",
+    "Certificate validity date checking (B-007)",
+    "Blacklisting within lookback window even if expired (B-004)",
+    "Proprietorship vs Pvt Ltd vs Public Ltd entity types (mixed)"
+  ]
+}

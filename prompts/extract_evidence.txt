@@ -1,0 +1,34 @@
+You are extracting specific evidence from a bidder's document to check against a tender eligibility criterion.
+
+CRITERION:
+{criterion_description}
+
+THRESHOLD / CONDITION:
+{threshold}
+
+DOCUMENT TYPE: {doc_category}
+DOCUMENT NAME: {doc_filename}
+
+DOCUMENT TEXT:
+{document_text}
+
+Your task:
+1. Find the specific value or information in this document that relates to the criterion above.
+2. Extract the exact value as it appears in the document.
+3. Also provide a normalised numeric value if applicable (convert Crore/Lakh to raw numbers, e.g., "5.2 Crore" = 52000000).
+
+Return a JSON object with:
+- "found": true if relevant information was found, false if not
+- "extracted_value": the value as found in the document (e.g., "Rs. 5,20,00,000" or "ISO 9001:2015" or "3 projects completed")
+- "normalized_value": numeric value if applicable (e.g., 52000000), or null if not a number
+- "source_text": the exact sentence or passage from the document containing this information (max 200 chars)
+- "page_reference": page number if identifiable, otherwise null
+- "notes": any relevant observations (e.g., "value is partially illegible", "certificate appears expired")
+
+Rules:
+- Only extract information that is ACTUALLY present in the document text.
+- Do NOT make up or assume values.
+- If the information is not found in this document, set "found" to false.
+- If a value is ambiguous or partially readable, extract what you can and note the issue.
+
+{document_text}

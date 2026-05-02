@@ -1,0 +1,125 @@
+{
+  "bidder_id": "B-003",
+  "company_name": "Gupta Infrastructure Pvt Ltd",
+  "scenario": "CLEAR NOT ELIGIBLE — Fails multiple mandatory criteria (turnover too low, insufficient experience, no ISO cert)",
+
+  "company_profile": {
+    "incorporated": "2015",
+    "registered_office": "45, Sector 18, Noida, UP 201301",
+    "type": "Private Limited Company",
+    "cin": "U45209UP2015PTC067890",
+    "directors": ["Rakesh Gupta"],
+    "employees": 65,
+    "civil_engineer": {
+      "name": "Er. Mohit Tiwari",
+      "qualification": "Diploma in Civil Engineering",
+      "experience_years": 7,
+      "notes": "Has diploma, not degree. Only 7 years experience vs required 10."
+    }
+  },
+
+  "financials": {
+    "source_type": "typed_pdf",
+    "audited": true,
+    "ca_name": "CA Suresh Agarwal",
+    "ca_membership_no": "ACA-112345",
+    "turnover": {
+      "fy_2023_24": 28000000,
+      "fy_2024_25": 32000000,
+      "fy_2025_26": 33000000,
+      "average": 31000000,
+      "formatted": {
+        "fy_2023_24": "Rs. 2,80,00,000",
+        "fy_2024_25": "Rs. 3,20,00,000",
+        "fy_2025_26": "Rs. 3,30,00,000",
+        "average": "Rs. 3,10,00,000"
+      }
+    },
+    "net_worth": {
+      "as_on": "31-03-2026",
+      "value": 8000000,
+      "formatted": "Rs. 80,00,000",
+      "positive": true
+    }
+  },
+
+  "experience": {
+    "similar_works": [
+      {
+        "project": "Boundary Wall Construction at Govt School, Noida",
+        "client": "District Administration, Gautam Buddh Nagar",
+        "value": 2500000,
+        "formatted_value": "Rs. 25,00,000",
+        "completion_date": "2024-06-15",
+        "completion_certificate": true,
+        "certificate_source": "typed_pdf",
+        "government_project": true,
+        "notes": "Value is only Rs. 25 Lakh — below the Rs. 2 Cr minimum per project"
+      },
+      {
+        "project": "Interior Renovation of Private Office, Greater Noida",
+        "client": "TechSoft Solutions Pvt Ltd",
+        "value": 15000000,
+        "formatted_value": "Rs. 1,50,00,000",
+        "completion_date": "2023-09-10",
+        "completion_certificate": true,
+        "certificate_source": "typed_pdf",
+        "government_project": false,
+        "notes": "Not a government project. Value is Rs. 1.5 Cr — below Rs. 2 Cr threshold. Interior renovation, not construction."
+      }
+    ],
+    "notes": "Only 2 projects total, neither qualifies: one is below Rs. 2 Cr, the other is below Rs. 2 Cr AND not a government project AND not building construction"
+  },
+
+  "compliance": {
+    "gst": {
+      "gstin": "09AABCG9012N1Z8",
+      "status": "Active",
+      "legal_name": "Gupta Infrastructure Pvt Ltd",
+      "registration_date": "2017-08-15",
+      "source_type": "typed_pdf"
+    },
+    "pan": {
+      "pan_number": "AABCG9012N",
+      "name": "Gupta Infrastructure Pvt Ltd",
+      "source_type": "typed_pdf"
+    },
+    "iso_9001": null,
+    "iso_9001_notes": "No ISO 9001:2015 certificate submitted. Not found in any document.",
+    "pwd_registration": {
+      "registered_with": "UP State PWD",
+      "class": "Class-III",
+      "registration_no": "UPPWD/2020/C3/1234",
+      "valid_until": "2026-09-30",
+      "source_type": "typed_pdf",
+      "notes": "Class-III registration — may not be appropriate class for Rs. 8.5 Cr project"
+    },
+    "blacklisting_affidavit": true,
+    "emd": {
+      "type": "Demand Draft",
+      "amount": 1000000,
+      "formatted": "Rs. 10,00,000",
+      "bank": "HDFC Bank",
+      "dd_number": "HDFC/DD/2026/778899",
+      "date": "2026-04-14",
+      "in_favour_of": "Commandant, Group Centre, CRPF, New Delhi"
+    }
+  },
+
+  "expected_verdict": {
+    "overall": "NOT ELIGIBLE",
+    "criteria": {
+      "turnover": "NOT ELIGIBLE — Average Rs. 3.1 Cr, well below Rs. 5 Cr threshold",
+      "net_worth": "ELIGIBLE — Positive (Rs. 80 Lakh)",
+      "similar_works": "NOT ELIGIBLE — 0 qualifying projects (one is below Rs. 2 Cr, other is below Rs. 2 Cr and not govt building construction). Required: 3.",
+      "gst": "ELIGIBLE",
+      "pan": "ELIGIBLE",
+      "iso_9001": "NOT ELIGIBLE — Certificate not submitted",
+      "pwd_registration": "NEEDS REVIEW — Class-III may not be appropriate for this project value",
+      "emd": "ELIGIBLE",
+      "blacklisting": "ELIGIBLE",
+      "technical_personnel": "NEEDS REVIEW — Engineer has diploma (not degree) and 7 years (not 10)"
+    },
+    "notes": "Clear rejection. Fails on turnover, experience, and ISO. Tests the system's ability to identify multiple failure points."
+  }
+}

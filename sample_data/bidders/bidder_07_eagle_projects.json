@@ -1,0 +1,158 @@
+{
+  "bidder_id": "B-007",
+  "company_name": "Eagle Projects & Infrastructure Ltd",
+  "scenario": "NEEDS MANUAL REVIEW — Expired ISO certificate (expired 2 months before tender submission date)",
+
+  "company_profile": {
+    "incorporated": "1995",
+    "registered_office": "B-42, Connaught Place, New Delhi 110001",
+    "type": "Public Limited Company",
+    "cin": "U45200DL1995PLC065432",
+    "directors": ["Harish Chandra", "Meera Chandra", "Siddharth Chandra"],
+    "employees": 520,
+    "civil_engineer": {
+      "name": "Er. Manish Kapoor",
+      "qualification": "M.Tech Structural Engineering, IIT Delhi",
+      "experience_years": 22
+    }
+  },
+
+  "financials": {
+    "source_type": "typed_pdf",
+    "audited": true,
+    "ca_name": "CA Rajiv Khanna, M/s Khanna & Khanna",
+    "ca_membership_no": "FCA-023456",
+    "turnover": {
+      "fy_2023_24": 145000000,
+      "fy_2024_25": 162000000,
+      "fy_2025_26": 158000000,
+      "average": 155000000,
+      "formatted": {
+        "fy_2023_24": "Rs. 14,50,00,000",
+        "fy_2024_25": "Rs. 16,20,00,000",
+        "fy_2025_26": "Rs. 15,80,00,000",
+        "average": "Rs. 15,50,00,000"
+      }
+    },
+    "net_worth": {
+      "as_on": "31-03-2026",
+      "value": 85000000,
+      "formatted": "Rs. 8,50,00,000",
+      "positive": true
+    }
+  },
+
+  "experience": {
+    "similar_works": [
+      {
+        "project": "Construction of Officers' Mess at Army Cantonment, Meerut",
+        "client": "Indian Army, MES",
+        "value": 82000000,
+        "formatted_value": "Rs. 8,20,00,000",
+        "completion_date": "2025-01-15",
+        "completion_certificate": true,
+        "certificate_source": "typed_pdf",
+        "government_project": true,
+        "paramilitary_defence": true
+      },
+      {
+        "project": "Multi-storey Residential Complex for CISF, Hyderabad",
+        "client": "CISF, MHA",
+        "value": 120000000,
+        "formatted_value": "Rs. 12,00,00,000",
+        "completion_date": "2024-06-30",
+        "completion_certificate": true,
+        "certificate_source": "typed_pdf",
+        "government_project": true,
+        "paramilitary_defence": true
+      },
+      {
+        "project": "Administrative Building for CBI, CGO Complex, Delhi",
+        "client": "CBI, Govt of India",
+        "value": 95000000,
+        "formatted_value": "Rs. 9,50,00,000",
+        "completion_date": "2023-03-20",
+        "completion_certificate": true,
+        "certificate_source": "typed_pdf",
+        "government_project": true,
+        "paramilitary_defence": false
+      },
+      {
+        "project": "Training Centre for NSG, Manesar",
+        "client": "National Security Guard, MHA",
+        "value": 68000000,
+        "formatted_value": "Rs. 6,80,00,000",
+        "completion_date": "2022-09-10",
+        "completion_certificate": true,
+        "certificate_source": "typed_pdf",
+        "government_project": true,
+        "paramilitary_defence": true
+      }
+    ]
+  },
+
+  "compliance": {
+    "gst": {
+      "gstin": "07AABCE4567R1Z1",
+      "status": "Active",
+      "legal_name": "Eagle Projects & Infrastructure Ltd",
+      "source_type": "typed_pdf"
+    },
+    "pan": {
+      "pan_number": "AABCE4567R",
+      "source_type": "typed_pdf"
+    },
+    "iso_9001": {
+      "standard": "ISO 9001:2015",
+      "certificate_number": "QMS-IN-2020-34567",
+      "certifying_body": "Lloyd's Register",
+      "valid_from": "2020-02-01",
+      "valid_until": "2026-01-31",
+      "status": "EXPIRED",
+      "expired_days_before_submission": 89,
+      "source_type": "typed_pdf",
+      "notes": "Certificate expired on 31 Jan 2026. Tender submission deadline is 30 Apr 2026. The tender requires ISO certification 'valid as on the date of submission of the bid.' This certificate is expired. However, renewal may be in progress."
+    },
+    "iso_14001": {
+      "standard": "ISO 14001:2015",
+      "certifying_body": "Lloyd's Register",
+      "valid_from": "2020-02-01",
+      "valid_until": "2026-01-31",
+      "status": "EXPIRED",
+      "notes": "Also expired. This was a desirable criterion (Section 7.2), not mandatory. But it's expired anyway."
+    },
+    "pwd_registration": {
+      "registered_with": "MES",
+      "class": "Class-I (Unlimited)",
+      "registration_no": "MES/CONT/2017/1234",
+      "valid_until": "2027-12-31",
+      "source_type": "typed_pdf"
+    },
+    "blacklisting_affidavit": true,
+    "emd": {
+      "type": "Bank Guarantee",
+      "amount": 1000000,
+      "formatted": "Rs. 10,00,000",
+      "bank": "ICICI Bank",
+      "bg_number": "ICICI/BG/2026/998877",
+      "date": "2026-04-09",
+      "in_favour_of": "Commandant, Group Centre, CRPF, New Delhi"
+    }
+  },
+
+  "expected_verdict": {
+    "overall": "NEEDS MANUAL REVIEW",
+    "criteria": {
+      "turnover": "ELIGIBLE — Average Rs. 15.5 Cr, well above threshold",
+      "net_worth": "ELIGIBLE",
+      "similar_works": "ELIGIBLE — 4 qualifying works, all with certificates, all government, 3 are paramilitary/defence",
+      "gst": "ELIGIBLE",
+      "pan": "ELIGIBLE",
+      "iso_9001": "NEEDS REVIEW — Certificate expired 31 Jan 2026 (89 days before submission deadline). Tender says 'valid as on date of submission'. Technically non-compliant. But renewal may be in progress — officer should verify.",
+      "pwd_registration": "ELIGIBLE — MES Class-I Unlimited",
+      "emd": "ELIGIBLE",
+      "blacklisting": "ELIGIBLE"
+    },
+    "notes": "An otherwise excellent bidder (strongest financials, best experience) who might be tripped by an expired ISO certificate. Tests whether the system catches certificate validity dates and applies the 'valid as on date of submission' rule. Should flag, not auto-reject — the renewal might be in process."
+  }
+}

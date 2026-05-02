@@ -1,0 +1,140 @@
+{
+  "bidder_id": "B-004",
+  "company_name": "Delta Engineering & Construction Co.",
+  "scenario": "CLEAR NOT ELIGIBLE — Meets most criteria but BLACKLISTED by a government body",
+
+  "company_profile": {
+    "incorporated": "2001",
+    "registered_office": "Plot 78, MIDC Industrial Area, Pune, Maharashtra 411018",
+    "type": "Partnership Firm",
+    "partners": ["Manoj Kulkarni", "Arun Deshmukh"],
+    "employees": 190,
+    "civil_engineer": {
+      "name": "Er. Sachin Patil",
+      "qualification": "B.Tech Civil, COEP Pune",
+      "experience_years": 16
+    }
+  },
+
+  "financials": {
+    "source_type": "typed_pdf",
+    "audited": true,
+    "ca_name": "CA Nilesh Deshpande, M/s Deshpande & Associates",
+    "ca_membership_no": "FCA-056789",
+    "turnover": {
+      "fy_2023_24": 98000000,
+      "fy_2024_25": 105000000,
+      "fy_2025_26": 112000000,
+      "average": 105000000,
+      "formatted": {
+        "fy_2023_24": "Rs. 9,80,00,000",
+        "fy_2024_25": "Rs. 10,50,00,000",
+        "fy_2025_26": "Rs. 11,20,00,000",
+        "average": "Rs. 10,50,00,000"
+      }
+    },
+    "net_worth": {
+      "as_on": "31-03-2026",
+      "value": 55000000,
+      "formatted": "Rs. 5,50,00,000",
+      "positive": true
+    }
+  },
+
+  "experience": {
+    "similar_works": [
+      {
+        "project": "Construction of Staff Quarters at Naval Dockyard, Mumbai",
+        "client": "Indian Navy, Ministry of Defence",
+        "value": 65000000,
+        "formatted_value": "Rs. 6,50,00,000",
+        "completion_date": "2024-11-30",
+        "completion_certificate": true,
+        "certificate_source": "typed_pdf",
+        "government_project": true
+      },
+      {
+        "project": "Administrative Building for BSNL, Pune",
+        "client": "BSNL (PSU)",
+        "value": 42000000,
+        "formatted_value": "Rs. 4,20,00,000",
+        "completion_date": "2023-07-20",
+        "completion_certificate": true,
+        "certificate_source": "typed_pdf",
+        "government_project": true
+      },
+      {
+        "project": "Construction of Hostel Block at IIT Bombay",
+        "client": "IIT Bombay (Autonomous)",
+        "value": 78000000,
+        "formatted_value": "Rs. 7,80,00,000",
+        "completion_date": "2022-04-15",
+        "completion_certificate": true,
+        "certificate_source": "typed_pdf",
+        "government_project": true
+      }
+    ]
+  },
+
+  "compliance": {
+    "gst": {
+      "gstin": "27AABFD3456Q1Z6",
+      "status": "Active",
+      "legal_name": "Delta Engineering & Construction Co.",
+      "source_type": "typed_pdf"
+    },
+    "pan": {
+      "pan_number": "AABFD3456Q",
+      "name": "Delta Engineering & Construction Co.",
+      "source_type": "typed_pdf"
+    },
+    "iso_9001": {
+      "standard": "ISO 9001:2015",
+      "certifying_body": "DNV GL",
+      "valid_from": "2024-03-01",
+      "valid_until": "2027-02-28",
+      "status": "valid",
+      "source_type": "typed_pdf"
+    },
+    "pwd_registration": {
+      "registered_with": "CPWD",
+      "class": "Class-I",
+      "registration_no": "CPWD/CONT/2018/3456",
+      "valid_until": "2027-06-30",
+      "source_type": "typed_pdf"
+    },
+    "blacklisting_affidavit": false,
+    "blacklisting_details": {
+      "blacklisted_by": "Maharashtra State PWD",
+      "reason": "Substandard work and delays in a road construction project",
+      "blacklisted_from": "2023-09-01",
+      "blacklisted_until": "2025-08-31",
+      "notes": "Blacklisting period has technically ended (expired Aug 2025), but the affidavit of non-blacklisting was NOT submitted. The tender asks for 'not blacklisted at any time during the last five years' — the blacklisting falls within this window even though it has expired."
+    },
+    "emd": {
+      "type": "Bank Guarantee",
+      "amount": 1000000,
+      "formatted": "Rs. 10,00,000",
+      "bank": "Bank of Maharashtra",
+      "bg_number": "BOM/BG/2026/112233",
+      "date": "2026-04-11",
+      "in_favour_of": "Commandant, Group Centre, CRPF, New Delhi"
+    }
+  },
+
+  "expected_verdict": {
+    "overall": "NOT ELIGIBLE",
+    "criteria": {
+      "turnover": "ELIGIBLE — Average Rs. 10.5 Cr, well above threshold",
+      "net_worth": "ELIGIBLE",
+      "similar_works": "ELIGIBLE — 3 qualifying works with certificates",
+      "gst": "ELIGIBLE",
+      "pan": "ELIGIBLE",
+      "iso_9001": "ELIGIBLE",
+      "pwd_registration": "ELIGIBLE",
+      "emd": "ELIGIBLE",
+      "blacklisting": "NOT ELIGIBLE — Was blacklisted by Maharashtra PWD in 2023-2025 (within 5-year window). Non-blacklisting affidavit not submitted."
+    },
+    "notes": "Tests edge case: strong bidder who fails on a non-financial, non-technical criterion (blacklisting). Also tests whether the system catches the '5-year window' nuance even though the blacklisting itself has expired."
+  }
+}

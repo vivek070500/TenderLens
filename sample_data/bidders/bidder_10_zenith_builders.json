@@ -1,0 +1,172 @@
+{
+  "bidder_id": "B-010",
+  "company_name": "Zenith Builders",
+  "scenario": "NEEDS MANUAL REVIEW — Photograph-only submission. All documents are phone photos, not PDFs. OCR quality varies wildly.",
+
+  "company_profile": {
+    "incorporated": "2012",
+    "registered_office": "Near Bus Stand, Alwar, Rajasthan 301001",
+    "type": "Proprietorship Firm",
+    "proprietor": "Mohammad Irfan Khan",
+    "employees": 85,
+    "civil_engineer": {
+      "name": "Er. Ravi Yadav",
+      "qualification": "B.Tech Civil, RTU Kota",
+      "experience_years": 11
+    }
+  },
+
+  "financials": {
+    "source_type": "photograph_jpg",
+    "notes": "ALL financial documents are phone photographs of printed/handwritten documents. Varying quality — some taken in office lighting, some in natural light with shadows.",
+    "audited": true,
+    "ca_name": "CA Rakesh Meena",
+    "ca_membership_no": "ACA-178901",
+    "turnover": {
+      "fy_2023_24": {
+        "value_best_estimate": 55000000,
+        "photo_quality": "decent",
+        "ocr_confidence": 0.82,
+        "ocr_raw_text": "Rs. 5,50,00,000",
+        "formatted": "Rs. 5.50 Crore"
+      },
+      "fy_2024_25": {
+        "value_best_estimate": 61000000,
+        "photo_quality": "poor — taken at angle, glare on page",
+        "ocr_confidence": 0.64,
+        "ocr_raw_text": "Rs. 6,_0,00,000",
+        "notes": "Second digit after 6 is washed out by glare. Could be 6,10 or 6,00 or 6,80.",
+        "formatted": "Rs. 6.?0 Crore"
+      },
+      "fy_2025_26": {
+        "value_best_estimate": 58000000,
+        "photo_quality": "medium — slight blur",
+        "ocr_confidence": 0.73,
+        "ocr_raw_text": "Rs. 5,80,00,000",
+        "formatted": "Rs. 5.80 Crore"
+      },
+      "average_best_estimate": 58000000,
+      "notes": "If all estimates are correct, average is ~Rs. 5.8 Cr — above threshold. But FY 2024-25 has low confidence."
+    },
+    "ca_certificate": {
+      "source_type": "photograph_jpg",
+      "photo_quality": "medium",
+      "ocr_confidence": 0.70,
+      "stated_average": "Rs. 5.80 Crore (approx)",
+      "notes": "CA certificate is also a photo. The word 'approx' is present in the document — unusual for a CA certificate."
+    },
+    "net_worth": {
+      "as_on": "31-03-2026",
+      "value_best_estimate": 12000000,
+      "photo_quality": "decent",
+      "ocr_confidence": 0.79,
+      "positive": true
+    }
+  },
+
+  "experience": {
+    "similar_works": [
+      {
+        "project": "Construction of Community Centre for Gram Panchayat, Alwar",
+        "client": "Gram Panchayat / District Rural Dev Agency (State Govt)",
+        "value": 22000000,
+        "formatted_value": "Rs. 2,20,00,000",
+        "completion_date": "2024-05-10",
+        "completion_certificate": true,
+        "certificate_source": "photograph_jpg",
+        "photo_quality": "decent",
+        "ocr_confidence": 0.80,
+        "government_project": true,
+        "notes": "Community centre — is this 'residential or commercial'? It's a public building. Grey area."
+      },
+      {
+        "project": "Staff Quarters for Rajasthan Police, Bharatpur",
+        "client": "Rajasthan Police (State Govt)",
+        "value": 28000000,
+        "formatted_value": "Rs. 2,80,00,000",
+        "completion_date": "2023-01-20",
+        "completion_certificate": true,
+        "certificate_source": "photograph_jpg",
+        "photo_quality": "medium",
+        "ocr_confidence": 0.75,
+        "government_project": true,
+        "notes": "Staff quarters = residential. Rajasthan Police = State Govt. Qualifies."
+      },
+      {
+        "project": "Primary Health Centre Building, Dausa",
+        "client": "Rajasthan State Health Dept",
+        "value": 21000000,
+        "formatted_value": "Rs. 2,10,00,000",
+        "completion_date": "2022-03-28",
+        "completion_certificate": true,
+        "certificate_source": "photograph_jpg",
+        "photo_quality": "poor — finger partially visible in corner, uneven lighting",
+        "ocr_confidence": 0.59,
+        "government_project": true,
+        "notes": "OCR confidence is low on this certificate. The project value could be Rs. 2,10,00,000 or Rs. 2,18,00,000 or even Rs. 2,1_,00,000. Either way probably above Rs. 2 Cr, but confidence is low. Date is also hard to read."
+      }
+    ]
+  },
+
+  "compliance": {
+    "gst": {
+      "gstin": "08AABFZ1234N1Z4",
+      "status": "Active",
+      "legal_name": "Zenith Builders",
+      "source_type": "photograph_jpg",
+      "photo_quality": "decent",
+      "ocr_confidence": 0.84,
+      "notes": "GST certificate photo is reasonably clear"
+    },
+    "pan": {
+      "pan_number": "AABFZ1234N",
+      "source_type": "photograph_jpg",
+      "photo_quality": "medium",
+      "ocr_confidence": 0.76
+    },
+    "iso_9001": {
+      "standard": "ISO 9001:2015",
+      "certifying_body": "QCI-NABCB accredited body",
+      "valid_from": "2025-06-01",
+      "valid_until": "2028-05-31",
+      "status": "valid",
+      "source_type": "photograph_jpg",
+      "photo_quality": "medium",
+      "ocr_confidence": 0.72,
+      "notes": "ISO certificate is a photo. Certifying body name is partially illegible."
+    },
+    "pwd_registration": {
+      "registered_with": "Rajasthan State PWD",
+      "class": "Class-I",
+      "registration_no": "RJPWD/C1/2023/789",
+      "valid_until": "2028-03-31",
+      "source_type": "photograph_jpg"
+    },
+    "blacklisting_affidavit": true,
+    "emd": {
+      "type": "Demand Draft",
+      "amount": 1000000,
+      "formatted": "Rs. 10,00,000",
+      "bank": "State Bank of India",
+      "dd_number": "SBI/DD/2026/889900",
+      "date": "2026-04-16",
+      "in_favour_of": "Commandant, Group Centre, CRPF, New Delhi"
+    }
+  },
+
+  "expected_verdict": {
+    "overall": "NEEDS MANUAL REVIEW",
+    "criteria": {
+      "turnover": "NEEDS REVIEW — Estimated average Rs. 5.8 Cr (above threshold) but FY 2024-25 has OCR confidence of only 0.64 due to glare. Officer should verify original financial statement.",
+      "net_worth": "ELIGIBLE (probable)",
+      "similar_works": "NEEDS REVIEW — 3 projects, all with certificates (photos), but: (a) one certificate has very low OCR confidence (0.59), (b) 'community centre' classification as residential/commercial is debatable",
+      "gst": "ELIGIBLE (high confidence photo)",
+      "pan": "ELIGIBLE (medium confidence)",
+      "iso_9001": "NEEDS REVIEW — Certificate appears valid but certifying body name partially illegible in photo. Officer should verify accreditation.",
+      "pwd_registration": "ELIGIBLE",
+      "emd": "ELIGIBLE",
+      "blacklisting": "ELIGIBLE"
+    },
+    "notes": "Tests the all-photographs scenario. A small contractor in a tier-3 city who submitted everything as phone photos. The system needs to handle this gracefully — extract what it can, flag what it can't, and never auto-reject just because the format is inconvenient. This bidder may well be eligible if the originals are verified."
+  }
+}

@@ -1,0 +1,145 @@
+{
+  "bidder_id": "B-001",
+  "company_name": "Apex Constructions Pvt Ltd",
+  "scenario": "CLEAR ELIGIBLE — All criteria met, clean documents, well above thresholds",
+
+  "company_profile": {
+    "incorporated": "1998",
+    "registered_office": "14, Industrial Area Phase-II, Chandigarh 160002",
+    "type": "Private Limited Company",
+    "cin": "U45200CH1998PTC020145",
+    "directors": ["Rajesh Malhotra", "Sunita Malhotra"],
+    "employees": 280,
+    "civil_engineer": {
+      "name": "Er. Vikram Singh",
+      "qualification": "B.Tech Civil Engineering, IIT Roorkee",
+      "experience_years": 18
+    }
+  },
+
+  "financials": {
+    "source_type": "typed_pdf",
+    "audited": true,
+    "ca_name": "CA Anil Kapoor, M/s Kapoor & Associates",
+    "ca_membership_no": "FCA-045672",
+    "turnover": {
+      "fy_2023_24": 72500000,
+      "fy_2024_25": 81200000,
+      "fy_2025_26": 93400000,
+      "average": 82366667,
+      "formatted": {
+        "fy_2023_24": "Rs. 7,25,00,000",
+        "fy_2024_25": "Rs. 8,12,00,000",
+        "fy_2025_26": "Rs. 9,34,00,000",
+        "average": "Rs. 8,23,66,667"
+      }
+    },
+    "net_worth": {
+      "as_on": "31-03-2026",
+      "value": 45000000,
+      "formatted": "Rs. 4,50,00,000",
+      "positive": true
+    }
+  },
+
+  "experience": {
+    "similar_works": [
+      {
+        "project": "Construction of Type-III Quarters (48 units) at BSF Campus, Jalandhar",
+        "client": "Border Security Force, Ministry of Home Affairs",
+        "value": 41000000,
+        "formatted_value": "Rs. 4,10,00,000",
+        "completion_date": "2024-03-15",
+        "completion_certificate": true,
+        "certificate_source": "typed_pdf",
+        "government_project": true
+      },
+      {
+        "project": "Construction of Administrative Block at ITBP Base, Dehradun",
+        "client": "Indo-Tibetan Border Police, MHA",
+        "value": 35000000,
+        "formatted_value": "Rs. 3,50,00,000",
+        "completion_date": "2023-09-22",
+        "completion_certificate": true,
+        "certificate_source": "typed_pdf",
+        "government_project": true
+      },
+      {
+        "project": "Construction of Barracks and Mess Hall at CRPF Training Centre, Neemuch",
+        "client": "CRPF, Ministry of Home Affairs",
+        "value": 52000000,
+        "formatted_value": "Rs. 5,20,00,000",
+        "completion_date": "2022-12-10",
+        "completion_certificate": true,
+        "certificate_source": "typed_pdf",
+        "government_project": true
+      },
+      {
+        "project": "Residential Complex for SSB at Lucknow",
+        "client": "Sashastra Seema Bal, MHA",
+        "value": 28000000,
+        "formatted_value": "Rs. 2,80,00,000",
+        "completion_date": "2022-06-30",
+        "completion_certificate": true,
+        "certificate_source": "typed_pdf",
+        "government_project": true
+      }
+    ]
+  },
+
+  "compliance": {
+    "gst": {
+      "gstin": "04AABCA1234R1ZP",
+      "status": "Active",
+      "legal_name": "Apex Constructions Pvt Ltd",
+      "registration_date": "2017-07-01",
+      "source_type": "typed_pdf"
+    },
+    "pan": {
+      "pan_number": "AABCA1234R",
+      "name": "Apex Constructions Pvt Ltd",
+      "source_type": "typed_pdf"
+    },
+    "iso_9001": {
+      "standard": "ISO 9001:2015",
+      "certificate_number": "QMS-IN-2023-78456",
+      "certifying_body": "Bureau Veritas",
+      "valid_from": "2023-06-15",
+      "valid_until": "2026-06-14",
+      "status": "valid",
+      "source_type": "typed_pdf"
+    },
+    "pwd_registration": {
+      "registered_with": "CPWD",
+      "class": "Class-I (Unlimited)",
+      "registration_no": "CPWD/CONT/2019/4532",
+      "valid_until": "2027-03-31",
+      "source_type": "typed_pdf"
+    },
+    "blacklisting_affidavit": true,
+    "emd": {
+      "type": "Demand Draft",
+      "amount": 1000000,
+      "formatted": "Rs. 10,00,000",
+      "bank": "State Bank of India",
+      "dd_number": "SBI/DD/2026/456789",
+      "date": "2026-04-10",
+      "in_favour_of": "Commandant, Group Centre, CRPF, New Delhi"
+    }
+  },
+
+  "expected_verdict": {
+    "overall": "ELIGIBLE",
+    "criteria": {
+      "turnover": "ELIGIBLE — Average Rs. 8.24 Cr, well above Rs. 5 Cr threshold",
+      "net_worth": "ELIGIBLE — Positive net worth of Rs. 4.5 Cr",
+      "similar_works": "ELIGIBLE — 4 similar works, all with completion certificates, all government projects",
+      "gst": "ELIGIBLE — Active GST registration",
+      "pan": "ELIGIBLE — Valid PAN",
+      "iso_9001": "ELIGIBLE — Valid ISO 9001:2015",
+      "pwd_registration": "ELIGIBLE — CPWD Class-I",
+      "emd": "ELIGIBLE — DD of Rs. 10 Lakh submitted",
+      "blacklisting": "ELIGIBLE — Affidavit submitted"
+    }
+  }
+}
