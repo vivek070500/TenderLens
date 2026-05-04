@@ -1,4 +1,4 @@
-You are extracting specific evidence from a bidder's document to check against a tender eligibility criterion.
+You are extracting evidence for ONE tender eligibility criterion from a few short text excerpts taken from a single bidder's documents.
 
 CRITERION:
 {criterion_description}
@@ -6,29 +6,54 @@ CRITERION:
 THRESHOLD / CONDITION:
 {threshold}
 
-DOCUMENT TYPE: {doc_category}
-DOCUMENT NAME: {doc_filename}
+EXPECTED EVIDENCE TYPE:
+{expected_evidence}
 
-DOCUMENT TEXT:
-{document_text}
+EVIDENCE CHUNKS (excerpts from bidder documents):
+{evidence_chunks}
 
-Your task:
-1. Find the specific value or information in this document that relates to the criterion above.
-2. Extract the exact value as it appears in the document.
-3. Also provide a normalised numeric value if applicable (convert Crore/Lakh to raw numbers, e.g., "5.2 Crore" = 52000000).
+Your task: look through the chunks above and extract every distinct piece of evidence that addresses the criterion.
 
-Return a JSON object with:
-- "found": true if relevant information was found, false if not
-- "extracted_value": the value as found in the document (e.g., "Rs. 5,20,00,000" or "ISO 9001:2015" or "3 projects completed")
-- "normalized_value": numeric value if applicable (e.g., 52000000), or null if not a number
-- "source_text": the exact sentence or passage from the document containing this information (max 200 chars)
-- "page_reference": page number if identifiable, otherwise null
-- "notes": any relevant observations (e.g., "value is partially illegible", "certificate appears expired")
+Return a JSON object with a single key "evidence" containing a LIST of evidence items:
 
-Rules:
-- Only extract information that is ACTUALLY present in the document text.
-- Do NOT make up or assume values.
-- If the information is not found in this document, set "found" to false.
-- If a value is ambiguous or partially readable, extract what you can and note the issue.
+{
+  "evidence": [
+    {
+      "found": true,
+      "extracted_value": "Rs. 5,40,00,000",
+      "normalized_value": 54000000,
+      "source_text": "Tendered Value: Rs. 5,40,00,000 (Five Crore Forty Lakhs only)",
+      "source_document": "09_work_completion_cert_project1.png",
+      "notes": ""
+    }
+  ]
+}
 
-{document_text}
+When the criterion is satisfied by ONE value (e.g. turnover, net worth, GST registration), return ONE entry.
+When the criterion requires MULTIPLE items (e.g. "at least 3 projects each ≥ Rs. 2 Crore"), return ONE entry PER distinct item you find in the chunks.
+When NO evidence is found, return: {"evidence": []}
+
+Field guide:
+- "found": always true for any item you include in the list
+- "extracted_value": the value as it appears in the chunk (e.g. "Rs. 5,40,00,000", "10 years", "ISO 9001:2015 expired 13 April 2026", "POSITIVE", "ACTIVE")
+- "normalized_value": numeric value when applicable. Conversions:
+    Indian currency: 1 Crore = 10000000, 1 Lakh = 100000.
+      "Rs. 5 Crore"      -> 50000000
+      "Rs. 2,00,00,000"  -> 20000000  (Two Crore)
+      "Rs. 50 Lakh"      -> 5000000
+      "Rs. 10,00,000" / "Rupees Ten Lakhs" -> 1000000 (NOT 10000000 — that would be one crore)
+    Years/count: the integer ("10 years" -> 10, "3 projects" -> 3).
+    Boolean evidence (e.g. "valid certificate", "POSITIVE", "registered"):
+      use 1 when the criterion is satisfied, 0 when explicitly NOT satisfied,
+      null when ambiguous.
+    Non-numeric: null.
+- "source_text": the exact sentence (max 200 chars) from a chunk that supports the value
+- "source_document": the filename from the [CHUNK N from <filename>] header
+- "notes": flag concerns — certificate expired, value partially illegible, "application pending", "suspended in 2023", contradictory information, etc.
+
+RULES:
+- Only include items that are GENUINELY present in the chunks. Do not fabricate.
+- For personnel / "years of experience" criteria: only cite experience duration (e.g. 12 years). Do NOT use EMD, bank guarantee, turnover, or unrelated rupee amounts as evidence.
+- For "must not be blacklisted" criteria: if you find ANY mention of suspension/debarment/blacklisting (even self-disclosed by the bidder), include it as an evidence entry so the evaluator can judge.
+- For multiple completion certificates / multiple personnel / multiple projects: return ONE entry per distinct item, with its source_document set to the specific certificate file it came from.
+- Return ONLY the JSON object. No markdown, no prose.

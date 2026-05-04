@@ -6,13 +6,18 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from database.db import (
     init_db, get_criteria, save_criteria, confirm_criteria,
-    get_all_tenders, log_audit,
+    get_all_tenders, log_audit, get_tender,
 )
+from modules.ui_theme import apply_theme, page_kicker_step
+from modules.session_workspace import maybe_bind_ephemeral_session
 
+st.set_page_config(page_title="Review Criteria | TenderLens", layout="wide")
 init_db()
+maybe_bind_ephemeral_session()
 
-st.set_page_config(page_title="Review Criteria - TenderLens", layout="wide")
-st.title("Step 2: Review Extracted Criteria")
+apply_theme()
+page_kicker_step("Step 2 · Criteria review")
+st.title("Review and confirm eligibility criteria")
 
 # ── Select tender ──
 tender_id = st.session_state.get("active_tender_id")
@@ -22,7 +27,7 @@ if not tenders:
     st.warning("No tenders found. Please upload a tender document in Step 1.")
     st.stop()
 
-tender_options = {t["id"]: f"{t['name']} ({t['created_at']})" for t in tenders}
+tender_options = {t["id"]: t["name"] for t in tenders}
 selected_id = st.selectbox(
     "Select Tender",
     options=list(tender_options.keys()),
@@ -30,6 +35,13 @@ selected_id = st.selectbox(
     index=0 if tender_id not in tender_options else list(tender_options.keys()).index(tender_id),
 )
 st.session_state["active_tender_id"] = selected_id
+
+tender_row = get_tender(selected_id)
+if tender_row:
+    st.caption(
+        f"Tender **{tender_row['name']}** — changes are saved when you use Save or Confirm. "
+        "Returning from Step 3 does not require a new upload."
+    )
 
 # ── Load criteria ──
 criteria = get_criteria(selected_id)
@@ -41,9 +53,14 @@ if not criteria:
 is_confirmed = all(c["confirmed"] for c in criteria)
 
 if is_confirmed:
-    st.success("Criteria have been confirmed. You can proceed to Step 3: Evaluation.")
+    st.success("Criteria are confirmed. You can open evaluation or the report when ready.")
+else:
+    st.info(
+        "Confirm criteria when the list matches the tender. "
+        "You only need to upload again if you start a **new** procurement in Step 1."
+    )
 
-st.markdown(f"**{len(criteria)} criteria extracted.** Review and edit below, then confirm.")
+st.markdown(f"**{len(criteria)} criteria** — review and edit below.")
 st.markdown("---")
 
 # ── Editable criteria table ──
@@ -132,14 +149,25 @@ st.markdown("---")
 col_save, col_confirm = st.columns(2)
 
 with col_save:
-    if st.button("Save Changes", type="secondary"):
+    if st.button("Save changes", type="secondary", width="stretch", key="save_crit"):
         save_criteria(selected_id, edited_criteria)
         st.success("Changes saved!")
         st.rerun()
 
 with col_confirm:
-    if st.button("Confirm Criteria & Proceed to Evaluation", type="primary"):
+    if st.button("Confirm and open evaluation", type="primary", width="stretch", key="confirm_crit"):
         save_criteria(selected_id, edited_criteria)
         confirm_criteria(selected_id)
-        st.success("Criteria confirmed! Proceed to Step 3: Evaluation.")
-        st.rerun()
+        log_audit(selected_id, "criteria_confirmed_proceed", "Officer confirmed and proceeded to evaluation")
+        st.switch_page("pages/3_Evaluation.py")
+
+# ── Navigation ──
+st.markdown("---")
+col_prev, col_next = st.columns(2)
+with col_prev:
+    if st.button("← Back to intake", type="secondary", width="stretch", key="nav_prev"):
+        st.switch_page("pages/1_Upload_Documents.py")
+with col_next:
+    if is_confirmed:
+        if st.button("Next: Evaluation →", type="primary", width="stretch", key="nav_next"):
+            st.switch_page("pages/3_Evaluation.py")

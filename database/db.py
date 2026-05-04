@@ -63,27 +63,112 @@ def get_all_tenders() -> list:
     return [dict(r) for r in rows]
 
 
+def wipe_all_workspaces():
+    """Delete every tender and related rows (used for ephemeral / single-session mode)."""
+    ids = [t["id"] for t in get_all_tenders()]
+    for tid in ids:
+        delete_tender(tid)
+
+
+def delete_tender(tender_id: int):
+    """Delete a tender and all related rows (criteria, bidders, documents, evidence, verdicts, overrides, audit_log)."""
+    conn = get_connection()
+    bidder_ids = [
+        r["id"] for r in conn.execute(
+            "SELECT id FROM bidders WHERE tender_id = ?", (tender_id,)
+        ).fetchall()
+    ]
+    verdict_ids = []
+    for bid in bidder_ids:
+        verdict_ids.extend(
+            r["id"] for r in conn.execute(
+                "SELECT id FROM verdicts WHERE bidder_id = ?", (bid,)
+            ).fetchall()
+        )
+
+    if verdict_ids:
+        placeholders = ",".join("?" * len(verdict_ids))
+        conn.execute(
+            f"DELETE FROM officer_overrides WHERE verdict_id IN ({placeholders})",
+            verdict_ids,
+        )
+    if bidder_ids:
+        try:
+            from modules import rag_index as _rag
+            for _bid in bidder_ids:
+                _rag.delete_bidder_index(_bid)
+        except Exception:
+            pass
+        placeholders = ",".join("?" * len(bidder_ids))
+        conn.execute(f"DELETE FROM evidence WHERE bidder_id IN ({placeholders})", bidder_ids)
+        conn.execute(f"DELETE FROM verdicts WHERE bidder_id IN ({placeholders})", bidder_ids)
+        conn.execute(f"DELETE FROM documents WHERE bidder_id IN ({placeholders})", bidder_ids)
+
+    conn.execute("DELETE FROM documents WHERE tender_id = ?", (tender_id,))
+    conn.execute("DELETE FROM criteria WHERE tender_id = ?", (tender_id,))
+    conn.execute("DELETE FROM bidders WHERE tender_id = ?", (tender_id,))
+    conn.execute("DELETE FROM audit_log WHERE tender_id = ?", (tender_id,))
+    conn.execute("DELETE FROM tenders WHERE id = ?", (tender_id,))
+
+    conn.commit()
+    conn.close()
+
+
 # ── Criteria ──
 
 def save_criteria(tender_id: int, criteria_list: list):
     conn = get_connection()
-    conn.execute("DELETE FROM criteria WHERE tender_id = ?", (tender_id,))
+    # Get existing criteria keyed by criterion_id (e.g. "C-001")
+    existing = {}
+    for row in conn.execute(
+        "SELECT id, criterion_id FROM criteria WHERE tender_id = ?", (tender_id,)
+    ).fetchall():
+        existing[row["criterion_id"]] = row["id"]
+
+    seen_ids = set()
     for c in criteria_list:
-        conn.execute(
-            """INSERT INTO criteria
-               (tender_id, criterion_id, description, category, mandatory, threshold, expected_evidence, source_section)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
-            (
-                tender_id,
-                c.get("criterion_id", ""),
-                c.get("description", ""),
-                c.get("category", ""),
-                1 if c.get("mandatory", True) else 0,
-                c.get("threshold", ""),
-                c.get("expected_evidence", ""),
-                c.get("source_section", ""),
-            ),
+        crit_code = c.get("criterion_id", "")
+        values = (
+            c.get("description", ""),
+            c.get("category", ""),
+            1 if c.get("mandatory", True) else 0,
+            c.get("threshold", ""),
+            c.get("expected_evidence", ""),
+            c.get("source_section", ""),
         )
+        if crit_code in existing:
+            # Update existing row (preserves the primary key for FK references)
+            conn.execute(
+                """UPDATE criteria
+                   SET description=?, category=?, mandatory=?, threshold=?,
+                       expected_evidence=?, source_section=?
+                   WHERE id=?""",
+                values + (existing[crit_code],),
+            )
+            seen_ids.add(crit_code)
+        else:
+            # Insert new criterion
+            conn.execute(
+                """INSERT INTO criteria
+                   (tender_id, criterion_id, description, category, mandatory,
+                    threshold, expected_evidence, source_section)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+                (tender_id, crit_code) + values,
+            )
+
+    # Only delete criteria that were removed AND have no FK references
+    for crit_code, row_id in existing.items():
+        if crit_code not in seen_ids:
+            # Check if any evidence or verdicts reference this criterion
+            ev_count = conn.execute(
+                "SELECT COUNT(*) FROM evidence WHERE criterion_id = ?", (row_id,)
+            ).fetchone()[0]
+            vd_count = conn.execute(
+                "SELECT COUNT(*) FROM verdicts WHERE criterion_id = ?", (row_id,)
+            ).fetchone()[0]
+            if ev_count == 0 and vd_count == 0:
+                conn.execute("DELETE FROM criteria WHERE id = ?", (row_id,))
+
     conn.commit()
     conn.close()
     log_audit(tender_id, "criteria_saved", f"{len(criteria_list)} criteria")

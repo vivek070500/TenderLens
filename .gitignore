@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.venv/
+venv/
+
+# Local app data (regenerated at runtime)
+uploads/
+database/*.db
+database/tenderlens.db
+database/chroma/
+*.db
+
+# Local tooling / experiments
+test_upload_data/
+
+# Environment
+.env
+.env.local
+
+# OS / editor
+.DS_Store
+Thumbs.db

@@ -1,4 +1,4 @@
-You are evaluating whether a bidder meets a specific eligibility criterion for a government tender.
+You are evaluating whether a bidder meets a specific eligibility criterion for a government tender. Be FAIR and DECISIVE — do not default to NEEDS_REVIEW when clear evidence exists.
 
 CRITERION: {criterion_description}
 CATEGORY: {category}
@@ -11,19 +11,30 @@ EVIDENCE FOUND:
 Your task:
 Determine the verdict for this bidder on this criterion.
 
-Verdicts:
-- "ELIGIBLE" — clear, high-confidence evidence that the criterion is met
-- "NOT_ELIGIBLE" — clear, high-confidence evidence that the criterion is NOT met
-- "NEEDS_REVIEW" — evidence is ambiguous, incomplete, low-confidence, borderline, or missing
+Verdicts (choose the one that fits best):
+- "ELIGIBLE" — the evidence shows the criterion IS MET. Choose this when:
+    * A required document/certificate is present and valid (e.g. GST cert is active, ISO cert is unexpired, PAN card present)
+    * A numeric value clearly exceeds or matches the threshold (e.g. turnover Rs. 16 Cr when threshold is Rs. 5 Cr)
+    * Required experience/qualifications are clearly demonstrated
+    * An affidavit/declaration is provided as required
+- "NOT_ELIGIBLE" — the evidence shows the criterion is clearly NOT MET. Choose this when:
+    * A numeric value is clearly below the threshold (e.g. turnover Rs. 2 Cr when threshold is Rs. 5 Cr)
+    * A required certificate is expired or marked invalid
+    * The bidder has been blacklisted/debarred
+- "NEEDS_REVIEW" — only when truly uncertain. Choose this when:
+    * Evidence is missing entirely AND the criterion is mandatory
+    * The extracted value is borderline (within 10% of threshold)
+    * OCR confidence on the source document was low
+    * Evidence contradicts itself across documents
 
 Return a JSON object with:
 - "verdict": one of "ELIGIBLE", "NOT_ELIGIBLE", "NEEDS_REVIEW"
-- "explanation": 2-3 sentences explaining the verdict. Reference specific values and documents.
+- "explanation": 2-3 sentences explaining the verdict. Reference specific values and document names.
 - "confidence": your confidence in this verdict from 0.0 to 1.0
 
-Rules:
-- If no evidence was found for a mandatory criterion, verdict MUST be "NEEDS_REVIEW" (not NOT_ELIGIBLE), because the document might have been missed.
-- If a value is borderline (within 10% of a threshold), verdict should be "NEEDS_REVIEW".
-- If OCR confidence on the source document was low, verdict should be "NEEDS_REVIEW".
-- Never silently disqualify. When in doubt, choose "NEEDS_REVIEW".
-- Be specific in your explanation — cite the exact values and document names.
+IMPORTANT:
+- If clear evidence supports the criterion, choose ELIGIBLE — do NOT downgrade to NEEDS_REVIEW just to be cautious.
+- If a certificate is present and valid, that's ELIGIBLE.
+- If a value clearly exceeds the threshold by more than 10%, that's ELIGIBLE.
+- Only use NEEDS_REVIEW when evidence is genuinely missing, contradictory, or borderline.
+- Be specific in your explanation — cite exact values and document names.

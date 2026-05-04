@@ -5,59 +5,61 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from database.db import init_db
-
-init_db()
+from modules.ui_theme import apply_theme, page_kicker_step
+from modules.session_workspace import maybe_bind_ephemeral_session
 
 st.set_page_config(
     page_title="TenderLens",
-    page_icon="🔍",
+    page_icon="📋",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
-st.sidebar.title("TenderLens")
-st.sidebar.caption("AI-Powered Tender Eligibility Analysis")
+init_db()
+maybe_bind_ephemeral_session()
+
+apply_theme()
+
+st.sidebar.markdown("### TenderLens")
+st.sidebar.caption("Eligibility analysis for procurement")
 st.sidebar.markdown("---")
 st.sidebar.markdown(
     """
-    **How to use:**
-    1. Upload tender & bidder docs
-    2. Review extracted criteria
-    3. View evaluation results
-    4. Export report
-    """
+**Workflow**
+
+1. **Intake** — tender and bidder files  
+2. **Criteria** — review extracted rules  
+3. **Evaluation** — automated assessment  
+4. **Report** — export summary  
+"""
 )
 
-st.title("TenderLens")
-st.subheader("AI-Powered Eligibility Analysis for Government Procurement")
-
+page_kicker_step("Overview")
+st.title("Tender eligibility workspace")
 st.markdown(
-    """
-    Welcome to **TenderLens** — a platform that helps procurement officers evaluate
-    tender bids faster, more consistently, and with full auditability.
-
-    **Get started:** Use the sidebar to navigate to the pages, or click below.
-    """
+    "Support consistent, auditable preliminary checks on bidder submissions "
+    "against the tender’s stated criteria."
 )
 
+st.markdown("---")
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
-    st.markdown("### Step 1")
-    st.markdown("**Upload Documents**")
-    st.markdown("Upload the tender document and all bidder submissions.")
+    st.markdown("**Intake**")
+    st.caption("Upload tender and bidder evidence.")
 
 with col2:
-    st.markdown("### Step 2")
-    st.markdown("**Review Criteria**")
-    st.markdown("Review the eligibility criteria extracted from the tender.")
+    st.markdown("**Criteria**")
+    st.caption("Review and confirm rule text.")
 
 with col3:
-    st.markdown("### Step 3")
     st.markdown("**Evaluation**")
-    st.markdown("View criterion-by-criterion evaluation for each bidder.")
+    st.caption("Run assessment per bidder.")
 
 with col4:
-    st.markdown("### Step 4")
     st.markdown("**Report**")
-    st.markdown("Export the consolidated report with audit trail.")
+    st.caption("Download consolidated output.")
+
+st.markdown("---")
+if st.button("Open document intake →", type="primary", width="stretch"):
+    st.switch_page("pages/1_Upload_Documents.py")

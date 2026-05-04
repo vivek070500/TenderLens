@@ -1,35 +1,101 @@
-You are an expert at analysing government tender documents. Your task is to extract all eligibility criteria from the tender text provided below.
+You are an expert at analysing government tender documents. Your task is to extract EVERY SINGLE eligibility criterion from the tender text provided below. Do not miss any.
 
-For each criterion, return a JSON object with these fields:
-- "criterion_id": a short ID like "C-001", "C-002", etc.
-- "description": the full criterion in plain language
+CRITICAL INSTRUCTIONS:
+- A typical government tender has 10-15 distinct eligibility criteria. If you find fewer than 8, you have likely missed some — read the tender again.
+- Read EACH SECTION carefully. Common sections containing criteria: EMD/Earnest Money, Financial Eligibility, Technical Eligibility, Experience, Compliance Requirements, Documents Required, Desirable/Additional Criteria.
+- Each numbered sub-clause (e.g. 4.1, 4.2, 5.1, 5.2, 6.1, 6.2, 6.3, 6.4) typically contains ONE criterion. Treat each one separately.
+- Words like "must", "shall", "mandatory", "required", "should" indicate MANDATORY criteria.
+- Words like "desirable", "preferred", "additional weightage", "will be viewed favourably" indicate OPTIONAL criteria.
+- Extract BOTH mandatory and optional criteria.
+
+CATEGORY ASSIGNMENT (be precise):
+- "financial"  → money values: turnover, net worth, EMD, performance bond, paid-up capital
+- "experience" → past project track record, work completion, similar works delivered
+- "technical"  → personnel/staff qualifications, equipment/machinery, technical capability
+- "compliance" → registrations and certificates: GST, PAN, ISO, CPWD/MES/PWD, blacklisting affidavit
+IMPORTANT: A criterion about "qualified civil engineer with N years of experience" is TECHNICAL (about personnel), not "experience" (which is about past projects).
+
+THRESHOLD EXTRACTION (very important — used by deterministic checks):
+Always include a numeric threshold when one exists in the text. Use these exact formats:
+- Currency: ">= <number-in-rupees>" using the FULL Indian Rupee value in numerals
+- Duration: ">= <number> years" or ">= <number> months"
+- Count:    ">= <number>"
+- Boolean:  use a brief phrase like "valid certificate", "active registration", "not blacklisted in last 5 years"
+
+INDIAN RUPEE CONVERSION (read this carefully):
+- 1 Lakh  = 1,00,000      = 100000        (100 thousand)
+- 1 Crore = 1,00,00,000   = 10000000      (10 million / 100 lakh)
+- Rs. 2 Crore             = 20000000
+- Rs. 5 Crore             = 50000000
+- Rs. 50 Lakh             = 5000000
+- Rs. 2,00,00,000         = 20000000      (NOT 200000000 — that would be 20 Crore)
+- Rs. 5,00,00,000         = 50000000      (5 Crore)
+
+Examples of correctly extracted thresholds:
+- "Average annual turnover Rs. 5 Crore"          → threshold: ">= 50000000 INR average over 3 years"
+- "Each project value not less than Rs. 2 Crore" → threshold: ">= 20000000 INR per project"
+- "EMD of Rs. 10 Lakh"                           → threshold: ">= 1000000 INR"
+- "At least 10 years experience"                 → threshold: ">= 10 years"
+- "Three (3) similar completed works"            → threshold: ">= 3 projects"
+
+For EACH criterion, return a JSON object with these fields:
+- "criterion_id": short ID like "C-001", "C-002", etc. (number sequentially)
+- "description": the criterion in plain language. PRESERVE the original currency expressions and counts so they can be re-parsed later (e.g. include "Rs. 2,00,00,000 (Two Crore)" or "at least 3 projects" verbatim).
 - "category": one of "financial", "experience", "compliance", "technical"
-- "mandatory": true if mandatory, false if optional/desirable
-- "threshold": the specific threshold or condition (e.g., ">= 5 Crore", "at least 3 projects", "valid certificate required"). Use "" if no numeric threshold.
-- "expected_evidence": what documents the bidder should provide for this criterion
-- "source_section": the section number or page reference where this criterion appears in the tender
+- "mandatory": true if mandatory, false if desirable/optional
+- "threshold": the specific threshold or condition. Always populated when a numeric requirement exists.
+- "expected_evidence": what documents/proof the bidder should provide
+- "source_section": the section number where this criterion appears (e.g. "Section 4.1")
 
-Rules:
-- Extract EVERY eligibility criterion, both mandatory and optional.
-- Words like "must", "shall", "mandatory", "required" indicate mandatory criteria.
-- Words like "desirable", "preferred", "additional weightage" indicate optional criteria.
-- If a criterion has a numeric threshold, capture the exact number and operator (>=, <=, etc.)
-- Do NOT invent criteria that are not in the tender text.
-- If you are unsure whether something is a criterion, include it and mark it with a note.
-
-Return your response as a JSON object with a single key "criteria" containing an array of criterion objects.
+Return your response as a JSON object with a single key "criteria" containing an array of all criterion objects. Be exhaustive.
 
 Example output format:
 {
   "criteria": [
     {
       "criterion_id": "C-001",
-      "description": "Minimum average annual turnover of Rs. 5 Crore in last 3 financial years",
+      "description": "Bidder must submit Earnest Money Deposit (EMD) of Rs. 10,00,000 (Ten Lakh) in the form of DD or Bank Guarantee",
+      "category": "financial",
+      "mandatory": true,
+      "threshold": ">= 1000000 INR",
+      "expected_evidence": "EMD in the form of Demand Draft or Bank Guarantee",
+      "source_section": "Section 3.1"
+    },
+    {
+      "criterion_id": "C-002",
+      "description": "Minimum average annual turnover of Rs. 5,00,00,000 (Five Crore) during the last 3 financial years",
       "category": "financial",
       "mandatory": true,
       "threshold": ">= 50000000 INR average over 3 years",
-      "expected_evidence": "Audited financial statements, CA certificate",
+      "expected_evidence": "Audited financial statements, CA certificate of turnover",
       "source_section": "Section 4.1"
+    },
+    {
+      "criterion_id": "C-005",
+      "description": "Bidder should have completed at least three (3) similar works, each of value not less than Rs. 2,00,00,000 (Two Crore)",
+      "category": "experience",
+      "mandatory": true,
+      "threshold": ">= 20000000 INR per project, at least 3 projects",
+      "expected_evidence": "Work completion certificates from clients",
+      "source_section": "Section 5.1"
+    },
+    {
+      "criterion_id": "C-006",
+      "description": "Bidder must have at least one qualified civil engineer with minimum 10 years of experience on rolls",
+      "category": "technical",
+      "mandatory": true,
+      "threshold": ">= 10 years",
+      "expected_evidence": "Technical personnel details with qualification and joining date, EPF/ESIC records",
+      "source_section": "Section 6.1"
+    },
+    {
+      "criterion_id": "C-007",
+      "description": "Valid registration under the Goods and Services Tax (GST) Act",
+      "category": "compliance",
+      "mandatory": true,
+      "threshold": "valid GST registration certificate",
+      "expected_evidence": "GST registration certificate showing active status",
+      "source_section": "Section 7.1"
     }
   ]
 }
