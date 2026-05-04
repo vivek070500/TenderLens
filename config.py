@@ -23,6 +23,16 @@ RAG_SUMMARY_INPUT_CHARS = int(os.environ.get("TENDERLENS_RAG_SUMMARY_CHARS", "12
 RAG_TOP_DOC_SUMMARIES = int(os.environ.get("TENDERLENS_RAG_TOP_SUMMARIES", "4"))
 RAG_VECTOR_CHUNK_POOL = int(os.environ.get("TENDERLENS_RAG_CHUNK_POOL", "24"))
 
+# Anthropic-style contextual retrieval: LLM situates each chunk + hybrid BM25 + Chroma + optional rerank.
+RAG_CONTEXTUAL_RETRIEVAL = os.environ.get("TENDERLENS_RAG_CONTEXTUAL", "1").strip().lower() not in (
+    "0", "false", "no", "off",
+)
+RAG_CONTEXTUAL_BATCH_SIZE = int(os.environ.get("TENDERLENS_RAG_CONTEXT_BATCH", "6"))
+RAG_CONTEXTUAL_MAX_DOC_CHARS = int(os.environ.get("TENDERLENS_RAG_CONTEXT_DOC_CHARS", "12000"))
+RAG_HYBRID_RERANK = os.environ.get("TENDERLENS_RAG_HYBRID_RERANK", "1").strip().lower() not in (
+    "0", "false", "no", "off",
+)
+
 # Evidence extraction: by default scan each bidder document in order (chunk batches)
 # instead of Chroma/top-K retrieval. Set TENDERLENS_EVIDENCE_RAG=1 to use vector retrieval.
 EVIDENCE_USE_RAG_RETRIEVAL = os.environ.get("TENDERLENS_EVIDENCE_RAG", "0").strip().lower() in (

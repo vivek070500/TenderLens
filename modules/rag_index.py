@@ -13,13 +13,14 @@ from typing import Any, Callable, List, Optional
 from config import (
     CHROMA_DIR,
     OLLAMA_EMBED_MODEL,
+    RAG_CONTEXTUAL_RETRIEVAL,
     RAG_DOC_SUMMARIES,
     RAG_ENABLED,
     RAG_SUMMARY_INPUT_CHARS,
     RAG_TOP_DOC_SUMMARIES,
     RAG_VECTOR_CHUNK_POOL,
 )
-from modules import chunking
+from modules import contextual_rag as cr
 from modules import llm
 
 DEFAULT_TOP_K = 8
@@ -52,10 +53,18 @@ def _load_meta(bidder_id: int) -> dict:
         return {}
 
 
-def _save_meta(bidder_id: int, fp: str, embed_model: str):
+def _save_meta(bidder_id: int, fp: str, embed_model: str, contextual_retrieval: bool):
     p = _meta_path(bidder_id)
     with open(p, "w", encoding="utf-8") as f:
-        json.dump({"fingerprint": fp, "embed_model": embed_model}, f, indent=0)
+        json.dump(
+            {
+                "fingerprint": fp,
+                "embed_model": embed_model,
+                "contextual_retrieval": bool(contextual_retrieval),
+            },
+            f,
+            indent=0,
+        )
 
 
 def _chromadb_client():
@@ -130,7 +139,12 @@ def ensure_vector_index(
     name = _collection_name(bidder_id)
 
     with _chroma_lock:
-        if meta.get("fingerprint") == fp and meta.get("embed_model") == OLLAMA_EMBED_MODEL:
+        prev_ctx = bool(meta.get("contextual_retrieval"))
+        if (
+            meta.get("fingerprint") == fp
+            and meta.get("embed_model") == OLLAMA_EMBED_MODEL
+            and prev_ctx == RAG_CONTEXTUAL_RETRIEVAL
+        ):
             try:
                 return client.get_collection(name)
             except Exception:
@@ -177,32 +191,56 @@ def ensure_vector_index(
                 documents.append(summary)
                 metadatas.append(
                     _chroma_metadata(
-                        "doc_summary", fn, -1, doc.get("min_ocr_confidence"),
+                        "doc_summary",
+                        fn,
+                        -1,
+                        doc.get("min_ocr_confidence"),
+                        chunk_id="",
                     )
                 )
 
-        for di, doc in enumerate(docs):
-            fn = doc.get("filename") or f"doc_{di}"
-            text = doc.get("full_text") or ""
-            if not text.strip():
-                continue
-            for ci, chunk in enumerate(chunking.split_into_chunks(text)):
-                emb = _safe_embed(chunk)
-                if emb is None:
-                    if on_status:
-                        on_status("Embed model unavailable — skipping vector index.")
-                    try:
-                        client.delete_collection(name)
-                    except Exception:
-                        pass
-                    return None
-                cid = f"b{bidder_id}_d{di}_c{ci}"
-                ids.append(cid)
-                embeddings.append(emb)
-                documents.append(chunk)
-                metadatas.append(
-                    _chroma_metadata("chunk", fn, ci, doc.get("min_ocr_confidence")),
+        chunked = cr.chunk_documents(docs, bidder_id)
+        ctx_strings, _originals, _chunk_metas = cr.build_contextualized_records(
+            chunked, bidder_id, fp, on_status=on_status
+        )
+        if RAG_CONTEXTUAL_RETRIEVAL:
+            cr.save_hybrid_sidecar(
+                bidder_id,
+                [c["chunk_id"] for c in chunked],
+                ctx_strings,
+                _originals,
+                _chunk_metas,
+            )
+        else:
+            hp = cr.hybrid_index_path(bidder_id)
+            if os.path.isfile(hp):
+                try:
+                    os.remove(hp)
+                except OSError:
+                    pass
+
+        for i, c in enumerate(chunked):
+            emb = _safe_embed(ctx_strings[i])
+            if emb is None:
+                if on_status:
+                    on_status("Embed model unavailable — skipping vector index.")
+                try:
+                    client.delete_collection(name)
+                except Exception:
+                    pass
+                return None
+            ids.append(c["chunk_id"])
+            embeddings.append(emb)
+            documents.append(ctx_strings[i])
+            metadatas.append(
+                _chroma_metadata(
+                    "chunk",
+                    c["source_document"],
+                    c["chunk_index"],
+                    c.get("ocr_confidence"),
+                    chunk_id=c["chunk_id"],
                 )
+            )
 
         if not ids:
             try:
@@ -220,19 +258,10 @@ def ensure_vector_index(
                 metadatas=metadatas[i: i + batch],
             )
 
-        _save_meta(bidder_id, fp, OLLAMA_EMBED_MODEL)
+        _save_meta(bidder_id, fp, OLLAMA_EMBED_MODEL, RAG_CONTEXTUAL_RETRIEVAL)
         if on_status:
             on_status("Vector index ready.")
         return collection
-
-
-def _meta_float(v: Any) -> Optional[float]:
-    if v is None:
-        return None
-    try:
-        return float(v)
-    except (TypeError, ValueError):
-        return None
 
 
 def _chroma_metadata(
@@ -240,6 +269,7 @@ def _chroma_metadata(
     source_document: str,
     chunk_index: int,
     ocr_raw: Any,
+    chunk_id: str = "",
 ) -> dict:
     """Chroma only accepts str, int, float, bool — no None, no NumPy scalars."""
     ocr = -1.0
@@ -253,6 +283,7 @@ def _chroma_metadata(
         "source_document": str(source_document or ""),
         "chunk_index": int(chunk_index),
         "ocr_confidence": ocr,
+        "chunk_id": str(chunk_id or ""),
     }
 
 
@@ -268,6 +299,19 @@ def _criterion_query_text(criterion: dict) -> str:
 
 def _chunk_key(c: dict) -> tuple:
     return (c.get("source_document"), c.get("chunk_index"))
+
+
+def _bidder_id_from_collection(collection) -> Optional[int]:
+    try:
+        name = collection.name
+    except Exception:
+        return None
+    if not name or not str(name).startswith("bidder_"):
+        return None
+    try:
+        return int(str(name).split("_", 1)[1])
+    except (ValueError, IndexError):
+        return None
 
 
 def retrieve_from_index(
@@ -293,16 +337,6 @@ def retrieve_from_index(
     n_chunk = min(RAG_VECTOR_CHUNK_POOL, max(k * 3, k))
     n_sum = RAG_TOP_DOC_SUMMARIES
 
-    try:
-        chunk_hit = collection.query(
-            query_embeddings=[qemb],
-            n_results=n_chunk,
-            where={"kind": "chunk"},
-            include=["documents", "metadatas", "distances"],
-        )
-    except Exception:
-        return bp.retrieve_top_chunks_keyword(corpus, criterion, k=k)
-
     corpus_by_key = {_chunk_key(c): c for c in corpus}
     out: List[dict] = []
     seen = set()
@@ -314,30 +348,106 @@ def retrieve_from_index(
         seen.add(key)
         out.append(ch)
 
-    md = chunk_hit.get("metadatas") or [[]]
-    docs = chunk_hit.get("documents") or [[]]
-    if md and docs and md[0] and docs[0]:
-        for text, meta in zip(docs[0], md[0]):
-            if not meta or meta.get("kind") != "chunk":
+    bidder_id_col = _bidder_id_from_collection(collection)
+    hybrid = (
+        cr.load_hybrid_sidecar(bidder_id_col)
+        if bidder_id_col is not None and RAG_CONTEXTUAL_RETRIEVAL
+        else None
+    )
+    ch_ids = hybrid.get("chunk_ids") if hybrid else []
+    cx_t = hybrid.get("contextualized") if hybrid else []
+    ors = hybrid.get("originals") if hybrid else []
+    mt = hybrid.get("metas") if hybrid else []
+    hybrid_ok = (
+        bool(hybrid)
+        and len(ch_ids) == len(cx_t) == len(ors) == len(mt)
+        and len(ch_ids) > 0
+    )
+
+    if hybrid_ok:
+        bm25, tok = cr.build_bm25_index(cx_t)
+        merged, _, _ = cr.hybrid_retrieve(
+            collection,
+            qtext,
+            qemb,
+            ch_ids,
+            bm25,
+            tok,
+            n_chunk,
+            n_chunk,
+        )
+        id_pos = {cid: i for i, cid in enumerate(ch_ids)}
+        merged_unique: List[str] = []
+        s2 = set()
+        for cid in merged:
+            if cid in s2:
                 continue
-            fn = meta.get("source_document") or ""
-            ci = int(meta.get("chunk_index") or 0)
-            ck = (fn, ci)
-            if ck in corpus_by_key:
-                _add_chunk_dict(corpus_by_key[ck])
+            s2.add(cid)
+            merged_unique.append(cid)
+            if len(merged_unique) >= max(n_chunk * 3, k * 4, 24):
+                break
+        cands: List[dict] = []
+        for cid in merged_unique:
+            idx = id_pos.get(cid)
+            if idx is None:
+                continue
+            m = mt[idx]
+            fn = m.get("source_document") or ""
+            ci = int(m.get("chunk_index") or 0)
+            ky = (fn, ci)
+            if ky in corpus_by_key:
+                cands.append(corpus_by_key[ky])
             else:
-                ocr_m = meta.get("ocr_confidence")
+                ocr_m = m.get("ocr_confidence", -1.0)
                 try:
-                    ocr_f = float(ocr_m) if ocr_m is not None else None
+                    ocr_f = float(ocr_m)
                 except (TypeError, ValueError):
-                    ocr_f = None
-                ocr_out = None if ocr_f is None or ocr_f < 0 else ocr_f
-                _add_chunk_dict({
-                    "text": text,
+                    ocr_f = -1.0
+                cands.append({
+                    "text": ors[idx],
                     "source_document": fn,
                     "chunk_index": ci,
-                    "ocr_confidence": ocr_out,
+                    "ocr_confidence": None if ocr_f < 0 else ocr_f,
                 })
+        top_nr = min(len(cands), max(k, 12)) if cands else 0
+        ranked = cr.rerank_results(qtext, cands, top_n=top_nr)
+        for ch in ranked:
+            _add_chunk_dict(ch)
+    else:
+        try:
+            chunk_hit = collection.query(
+                query_embeddings=[qemb],
+                n_results=n_chunk,
+                where={"kind": "chunk"},
+                include=["documents", "metadatas", "distances"],
+            )
+        except Exception:
+            return bp.retrieve_top_chunks_keyword(corpus, criterion, k=k)
+
+        md = chunk_hit.get("metadatas") or [[]]
+        docs = chunk_hit.get("documents") or [[]]
+        if md and docs and md[0] and docs[0]:
+            for text, meta in zip(docs[0], md[0]):
+                if not meta or meta.get("kind") != "chunk":
+                    continue
+                fn = meta.get("source_document") or ""
+                ci = int(meta.get("chunk_index") or 0)
+                ck = (fn, ci)
+                if ck in corpus_by_key:
+                    _add_chunk_dict(corpus_by_key[ck])
+                else:
+                    ocr_m = meta.get("ocr_confidence")
+                    try:
+                        ocr_f = float(ocr_m) if ocr_m is not None else None
+                    except (TypeError, ValueError):
+                        ocr_f = None
+                    ocr_out = None if ocr_f is None or ocr_f < 0 else ocr_f
+                    _add_chunk_dict({
+                        "text": text,
+                        "source_document": fn,
+                        "chunk_index": ci,
+                        "ocr_confidence": ocr_out,
+                    })
 
     boosted_docs = set()
     if n_sum > 0 and RAG_DOC_SUMMARIES:
@@ -381,6 +491,10 @@ def retrieve_from_index(
     return out[:k]
 
 
+# Pipeline-oriented alias (Chroma + hybrid sidecar in one call).
+build_vector_index = ensure_vector_index
+
+
 def delete_bidder_index(bidder_id: int):
     """Remove Chroma collection and index metadata for a bidder."""
     try:
@@ -398,5 +512,11 @@ def delete_bidder_index(bidder_id: int):
     if os.path.isfile(mp):
         try:
             os.remove(mp)
+        except OSError:
+            pass
+    hp = cr.hybrid_index_path(bidder_id)
+    if os.path.isfile(hp):
+        try:
+            os.remove(hp)
         except OSError:
             pass
