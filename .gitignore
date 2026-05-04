@@ -13,8 +13,8 @@ database/tenderlens.db
 database/chroma/
 *.db
 
-# Local tooling / experiments
-test_upload_data/
+# Legacy demo bundle removed from repo (fixtures live in test_upload_data/)
+sample_data/
 
 # Environment
 .env

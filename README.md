@@ -134,6 +134,7 @@ TenderLens/
 │   ├── session_workspace.py
 │   └── ui_theme.py
 ├── prompts/               # LLM prompt templates (*.txt)
+├── test_upload_data/      # Example tender + bidder fixtures (optional local tests)
 ├── database/schema.sql
 └── tests/                 # Unit tests (pytest)
 ```
