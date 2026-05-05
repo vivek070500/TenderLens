@@ -174,63 +174,6 @@ def save_criteria(tender_id: int, criteria_list: list):
     log_audit(tender_id, "criteria_saved", f"{len(criteria_list)} criteria")
 
 
-def replace_criteria_for_new_upload(tender_id: int, criteria_list: list):
-    """Delete all criteria for a tender and insert a fresh extract from Step 1.
-
-    Cleans up evidence / verdicts that reference removed criteria rows so
-    FK constraints succeed when callers re-run extraction after evaluations.
-    """
-    conn = get_connection()
-    crit_rows = conn.execute(
-        "SELECT id FROM criteria WHERE tender_id = ?", (tender_id,)
-    ).fetchall()
-    crit_ids = [r["id"] for r in crit_rows]
-    if crit_ids:
-        ph = ",".join("?" * len(crit_ids))
-        verdict_ids = [
-            r["id"]
-            for r in conn.execute(
-                f"SELECT id FROM verdicts WHERE criterion_id IN ({ph})", crit_ids
-            ).fetchall()
-        ]
-        if verdict_ids:
-            ph_v = ",".join("?" * len(verdict_ids))
-            conn.execute(
-                f"DELETE FROM officer_overrides WHERE verdict_id IN ({ph_v})",
-                verdict_ids,
-            )
-        conn.execute(f"DELETE FROM verdicts WHERE criterion_id IN ({ph})", crit_ids)
-        conn.execute(f"DELETE FROM evidence WHERE criterion_id IN ({ph})", crit_ids)
-
-    conn.execute("DELETE FROM criteria WHERE tender_id = ?", (tender_id,))
-
-    for c in criteria_list:
-        crit_code = c.get("criterion_id", "")
-        values = (
-            c.get("description", ""),
-            c.get("category", ""),
-            1 if c.get("mandatory", True) else 0,
-            c.get("threshold", ""),
-            c.get("expected_evidence", ""),
-            c.get("source_section", ""),
-        )
-        conn.execute(
-            """INSERT INTO criteria
-               (tender_id, criterion_id, description, category, mandatory,
-                threshold, expected_evidence, source_section)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
-            (tender_id, crit_code) + values,
-        )
-
-    conn.commit()
-    conn.close()
-    log_audit(
-        tender_id,
-        "criteria_saved",
-        f"{len(criteria_list)} criteria (fresh extract)",
-    )
-
-
 def get_criteria(tender_id: int) -> list:
     conn = get_connection()
     rows = conn.execute(
