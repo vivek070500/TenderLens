@@ -7,7 +7,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from config import UPLOADS_DIR, PERSIST_WORKSPACE
 from database.db import (
     init_db, create_tender, create_bidder, save_document,
-    replace_criteria_for_new_upload, get_all_tenders, delete_tender,
+    save_criteria, get_all_tenders, delete_tender,
     get_tender, get_criteria, get_bidders,
 )
 from modules.ingestion import ingest_document
@@ -147,7 +147,7 @@ with st.expander(
 
         progress.progress(20, text="Extracting eligibility criteria…")
         criteria = extract_criteria(tender_data["full_text"])
-        replace_criteria_for_new_upload(tender_id, criteria)
+        save_criteria(tender_id, criteria)
 
         total_bidders = len([b for b in bidder_inputs if b["name"] and b["files"]])
         for idx, bi in enumerate(bidder_inputs):
